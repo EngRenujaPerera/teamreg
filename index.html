@@ -358,7 +358,7 @@
         clearUIInputs();
         updateSheetBanner();
       } else {
-        loginError.classList.remove("hidden");
+        loginError.classList.add("hidden");
       }
     });
 
@@ -410,14 +410,14 @@
       }
     }
 
-    // Fetch live data from Google Spreadsheet when changing sport
+    // Fetch live data from Google Sheet using JSONP script injection
     const sportSelect = document.getElementById("sportSelect");
     const sheetBanner = document.getElementById("sheetLinkBanner");
     const sheetStatusText = document.getElementById("sheetStatusText");
     const openSheetBtn = document.getElementById("openSheetBtn");
     const loadingStatus = document.getElementById("loadingStatus");
 
-    sportSelect.addEventListener("change", async () => {
+    sportSelect.addEventListener("change", () => {
       const sport = sportSelect.value;
       clearUIInputs();
       updateSheetBanner();
@@ -425,10 +425,14 @@
       if (!sport) return;
 
       loadingStatus.innerText = "Fetching from Spreadsheet...";
-      try {
-        const response = await fetch(`${GOOGLE_APPS_SCRIPT_URL}?sport=${encodeURIComponent(sport)}`);
-        const data = await response.json();
-
+      
+      const callbackName = "jsonp_callback_" + Math.round(100000 * Math.random());
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        if (script.parentNode) {
+          document.body.removeChild(script);
+        }
+        
         if (data.players && data.players.length > 0) {
           data.players.forEach((p, index) => {
             if (index < 20) {
@@ -440,10 +444,14 @@
         } else {
           loadingStatus.innerText = "New Roster";
         }
-      } catch (err) {
-        console.error("Fetch error:", err);
+      };
+
+      const script = document.createElement("script");
+      script.src = `${GOOGLE_APPS_SCRIPT_URL}?sport=${encodeURIComponent(sport)}&callback=${callbackName}`;
+      script.onerror = function() {
         loadingStatus.innerText = "Offline Mode";
-      }
+      };
+      document.body.appendChild(script);
     });
 
     function updateSheetBanner() {

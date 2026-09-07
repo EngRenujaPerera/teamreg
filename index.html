@@ -13,6 +13,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Cinzel+Decorative:wght@700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
+  <!-- Docxtemplater & FileSaver for template-based downloads -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.6/pizzip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.45.0/docxtemplater.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -80,13 +85,6 @@
     .sigil-glow {
       border: 2px solid rgba(212, 175, 55, 0.8);
       box-shadow: 0 0 25px rgba(212, 175, 55, 0.35), inset 0 0 15px rgba(0, 0, 0, 0.9);
-    }
-
-    @media print {
-      body * { visibility: hidden; }
-      #portalScreen, #portalScreen * { visibility: visible; }
-      #portalScreen { position: absolute; inset: 0; background: #030305 !important; }
-      button, header div.flex { display: none !important; }
     }
 
     ::-webkit-scrollbar { width: 7px; }
@@ -259,8 +257,8 @@
             <span>🔄 Sync to Spreadsheet</span>
           </button>
 
-          <button type="button" id="downloadPdfBtn" class="w-full bg-gradient-to-r from-red-950 via-red-900 to-amber-950 hover:from-red-900 hover:to-amber-900 text-amber-100 font-cinzel font-bold tracking-[0.2em] text-xs uppercase py-4 px-4 rounded-xl border border-amber-500/50 shadow-[0_0_20px_rgba(212,175,55,0.3)] transition-all flex items-center justify-center space-x-2 cursor-pointer">
-            <span>📜 Finalize & Download PDF</span>
+          <button type="button" id="downloadDocxBtn" class="w-full bg-gradient-to-r from-red-950 via-red-900 to-amber-950 hover:from-red-900 hover:to-amber-900 text-amber-100 font-cinzel font-bold tracking-[0.2em] text-xs uppercase py-4 px-4 rounded-xl border border-amber-500/50 shadow-[0_0_20px_rgba(212,175,55,0.3)] transition-all flex items-center justify-center space-x-2 cursor-pointer">
+            <span>📜 Finalize & Download Team Card (.docx)</span>
           </button>
         </div>
 
@@ -524,23 +522,31 @@
     });
 
     /******************************************************************
-     * 5. BUTTON 2: FINALIZE & DOWNLOAD PDF
+     * 5. BUTTON 2: FINALIZE & DOWNLOAD UPLOADED TEMPLATE FILE (.docx)
      ******************************************************************/
-    document.getElementById("downloadPdfBtn").addEventListener("click", async () => {
+    document.getElementById("downloadDocxBtn").addEventListener("click", async () => {
       const eventName = sportSelect.value;
       if (!eventName) {
         alert("Please select a sport/event first.");
         return;
       }
 
-      const playersList = gatherPlayersList();
-      if (playersList.length === 0) {
-        alert("Please add at least one player before downloading the PDF.");
-        return;
+      const today = new Date().toLocaleDateString("en-GB");
+      const payload = {
+        batch: authenticatedBatch,
+        event: eventName,
+        date_submitted: today
+      };
+
+      for (let i = 1; i <= 20; i++) {
+        payload[`player_${i}_name`] = document.getElementById(`player_${i}_name`).value.trim();
+        payload[`player_${i}_enum`] = document.getElementById(`player_${i}_enum`).value.trim();
       }
 
       try {
-        loadingStatus.innerText = "Syncing & Printing...";
+        loadingStatus.innerText = "Syncing & Generating Template...";
+        
+        // Auto-sync data to spreadsheet first
         if (GOOGLE_APPS_SCRIPT_URL) {
           await fetch(GOOGLE_APPS_SCRIPT_URL, {
             method: "POST",
@@ -549,16 +555,39 @@
             body: JSON.stringify({
               batch: authenticatedBatch,
               sport: eventName,
-              players: playersList
+              players: gatherPlayersList()
             })
           });
         }
 
-        loadingStatus.innerText = "Ready ✓";
-        window.print();
+        // Fetch and populate your uploaded team_cards.docx template
+        const response = await fetch("team_cards.docx");
+        if (!response.ok) {
+          throw new Error("Could not find 'team_cards.docx' in project directory.");
+        }
+        const arrayBuffer = await response.arrayBuffer();
+
+        const zip = new PizZip(arrayBuffer);
+        const doc = new window.docxtemplater(zip, {
+          paragraphLoop: true,
+          linebreaks: true,
+        });
+
+        doc.render(payload);
+
+        const filledBlob = doc.getZip().generate({
+          type: "blob",
+          mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        });
+
+        saveAs(filledBlob, `${authenticatedBatch}_${eventName}_TeamCard.docx`);
+        loadingStatus.innerText = "Downloaded ✓";
+        alert("Success! Spreadsheet synced and official template downloaded.");
+
       } catch (err) {
         console.error(err);
-        alert("PDF Generation Error: " + err.message);
+        alert("Generation Error: " + err.message);
+        loadingStatus.innerText = "Error";
       }
     });
 

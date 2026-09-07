@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>E-Week 2026 | PDF Team Registration & Ledger</title>
+  <title>E-Week 2026 | Team Registration Portal</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -12,10 +12,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Cinzel+Decorative:wght@700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-  <!-- PDFMake libraries -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
   <style>
     body {
@@ -84,6 +80,11 @@
     .sigil-glow {
       border: 2px solid rgba(212, 175, 55, 0.8);
       box-shadow: 0 0 25px rgba(212, 175, 55, 0.35), inset 0 0 15px rgba(0, 0, 0, 0.9);
+    }
+
+    @media print {
+      body * { visibility: hidden; }
+      #printableCard, #printableCard * { visibility: visible; }
     }
 
     ::-webkit-scrollbar { width: 7px; }
@@ -217,12 +218,12 @@
             <div class="flex items-center space-x-3 text-center sm:text-left">
               <span class="text-2xl filter drop-shadow">📊</span>
               <div>
-                <p class="text-[10px] font-bold uppercase tracking-[0.25em] text-stone-400 font-cinzel">Google Sheet Ledger</p>
+                <p class="text-[10px] font-bold uppercase tracking-[0.25em] text-stone-400 font-cinzel">Master Spreadsheet Ledger</p>
                 <p id="sheetStatusText" class="text-sm font-semibold text-amber-300 font-cinzel">Access Spreadsheet</p>
               </div>
             </div>
             <a id="openSheetBtn" href="#" target="_blank" class="text-xs font-cinzel font-bold uppercase tracking-wider bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/60 px-4 py-2 rounded-lg transition-all shadow-sm">
-              Open Sheet ↗
+              Open Spreadsheet ↗
             </a>
           </div>
         </div>
@@ -253,7 +254,7 @@
         <div class="pt-3">
           <button type="submit" id="submitBtn" class="w-full relative group overflow-hidden bg-gradient-to-r from-red-950 via-red-900 to-amber-950 hover:from-red-900 hover:to-amber-900 text-amber-100 font-cinzel font-bold tracking-[0.25em] text-sm uppercase py-4 px-6 rounded-xl border border-amber-500/40 shadow-[0_0_25px_rgba(185,28,28,0.3)] transition-all duration-300 flex items-center justify-center space-x-3">
             <img src="logo.png" onerror="this.src='https://lh3.googleusercontent.com/a/ACg8ocKVCZ3dwhUxDnuDbv2TfiSLT54QDnjOOAb-ke-HPQSY0R6qt4o=s360-c-no';" class="w-6 h-6 rounded-full border border-amber-400/70 object-cover group-hover:rotate-12 transition-transform duration-300" alt="sigil" />
-            <span id="btnLabel">Sync Google Sheet & Download PDF (.pdf)</span>
+            <span id="btnLabel">Sync Sheet & Save as PDF (.pdf)</span>
             <img src="logo.png" onerror="this.src='https://lh3.googleusercontent.com/a/ACg8ocKVCZ3dwhUxDnuDbv2TfiSLT54QDnjOOAb-ke-HPQSY0R6qt4o=s360-c-no';" class="w-6 h-6 rounded-full border border-amber-400/70 object-cover group-hover:-rotate-12 transition-transform duration-300" alt="sigil" />
           </button>
         </div>
@@ -364,33 +365,17 @@
     });
 
     /******************************************************************
-     * 3. GOOGLE SHEET APPS SCRIPT URL & LINKS
+     * 3. MASTER SPREADSHEET URLS PER BATCH
+     * Paste your single spreadsheet URL for each batch here:
      ******************************************************************/
-    const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxkFJsbdHQFZDAiFYWXyCIUvGbmbt0PxGqSGjm_FCEFvjSIC11CUEFyrhlcK30pzJ9fBg/exec";
-
-    const GOOGLE_SHEET_URLS = {
-      "E22": {
-        "Football": "", "Badminton": "", "Volleyball": "", "Netball": "",
-        "Cricket": "", "Carrom": "", "Chess": "", "Table Tennis": "",
-        "Elle": "", "Basket Ball": "", "Athletics": ""
-      },
-      "E23": {
-        "Football": "", "Badminton": "", "Volleyball": "", "Netball": "",
-        "Cricket": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit", 
-        "Carrom": "", "Chess": "", "Table Tennis": "",
-        "Elle": "", "Basket Ball": "", "Athletics": ""
-      },
-      "E24": {
-        "Football": "", "Badminton": "", "Volleyball": "", "Netball": "",
-        "Cricket": "", "Carrom": "", "Chess": "", "Table Tennis": "",
-        "Elle": "", "Basket Ball": "", "Athletics": ""
-      },
-      "E25": {
-        "Football": "", "Badminton": "", "Volleyball": "", "Netball": "",
-        "Cricket": "", "Carrom": "", "Chess": "", "Table Tennis": "",
-        "Elle": "", "Basket Ball": "", "Athletics": ""
-      }
+    const BATCH_SPREADSHEET_URLS = {
+      "E22": "",
+      "E23": "https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit", // <-- Paste your E23 Spreadsheet link here
+      "E24": "",
+      "E25": ""
     };
+
+    const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxkFJsbdHQFZDAiFYWXyCIUvGbmbt0PxGqSGjm_FCEFvjSIC11CUEFyrhlcK30pzJ9fBg/exec";
 
     // Render 20 Player Rows
     const playersContainer = document.getElementById("playersContainer");
@@ -424,16 +409,16 @@
         return;
       }
       sheetBanner.classList.remove("hidden");
-      const url = GOOGLE_SHEET_URLS[authenticatedBatch] && GOOGLE_SHEET_URLS[authenticatedBatch][sport];
+      const url = BATCH_SPREADSHEET_URLS[authenticatedBatch];
 
       if (url && url.trim() !== "") {
         sheetBanner.className = "p-4 rounded-xl border border-amber-500/40 bg-amber-950/20";
-        sheetStatusText.innerText = `${authenticatedBatch} • ${sport} Sheet Linked`;
+        sheetStatusText.innerText = `${authenticatedBatch} Master Spreadsheet Linked`;
         openSheetBtn.href = url;
         openSheetBtn.classList.remove("hidden");
       } else {
         sheetBanner.className = "p-4 rounded-xl border border-stone-800 bg-stone-950/40";
-        sheetStatusText.innerText = `No Google Sheet linked for ${authenticatedBatch} • ${sport} yet`;
+        sheetStatusText.innerText = `No Spreadsheet linked for ${authenticatedBatch} yet`;
         openSheetBtn.classList.add("hidden");
       }
     }
@@ -441,7 +426,7 @@
     sportSelect.addEventListener("change", updateSheetBanner);
 
     /******************************************************************
-     * 4. FORM SUBMIT: SYNC GOOGLE SHEET & DOWNLOAD PDF
+     * 4. FORM SUBMIT: SYNC SHEET & PRINT PDF
      ******************************************************************/
     document.getElementById("teamCardForm").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -449,45 +434,27 @@
       const btnLabel = document.getElementById("btnLabel");
 
       submitBtn.disabled = true;
-      btnLabel.innerText = "Syncing Sheet & Generating PDF...";
+      btnLabel.innerText = "Syncing Sheet & Preparing PDF...";
 
       const eventName = sportSelect.value;
-      const today = new Date().toLocaleDateString("en-GB");
-
-      const playersList = [];
-      const tableBody = [
-        [
-          { text: 'Rank', bold: true, fillColor: '#1f160e', color: '#fbbf24', alignment: 'center' },
-          { text: 'Player Full Name', bold: true, fillColor: '#1f160e', color: '#fbbf24' },
-          { text: 'Registration No.', bold: true, fillColor: '#1f160e', color: '#fbbf24' }
-        ]
-      ];
-
-      let count = 0;
-      for (let i = 1; i <= 20; i++) {
-        const nameVal = document.getElementById(`player_${i}_name`).value.trim();
-        const enumVal = document.getElementById(`player_${i}_enum`).value.trim();
-        
-        if (nameVal || enumVal) {
-          count++;
-          playersList.push({ name: nameVal, enum: enumVal });
-          tableBody.push([
-            { text: count.toString(), alignment: 'center' },
-            { text: nameVal || '-' },
-            { text: enumVal ? enumVal.toUpperCase() : '-' }
-          ]);
-        }
-      }
-
-      if (count === 0) {
-        alert("Please enter at least one player in the roster.");
+      if (!eventName) {
+        alert("Please select a sport/event.");
         submitBtn.disabled = false;
-        btnLabel.innerText = "Sync Google Sheet & Download PDF (.pdf)";
+        btnLabel.innerText = "Sync Sheet & Save as PDF (.pdf)";
         return;
       }
 
+      const playersList = [];
+      for (let i = 1; i <= 20; i++) {
+        const nameVal = document.getElementById(`player_${i}_name`).value.trim();
+        const enumVal = document.getElementById(`player_${i}_enum`).value.trim();
+        if (nameVal || enumVal) {
+          playersList.push({ name: nameVal, enum: enumVal });
+        }
+      }
+
       try {
-        // 1. Send data to Google Sheet via Apps Script Web App
+        // Send data to Google Sheet Apps Script Backend (routes straight to the sport's tab)
         if (GOOGLE_APPS_SCRIPT_URL) {
           await fetch(GOOGLE_APPS_SCRIPT_URL, {
             method: "POST",
@@ -501,68 +468,17 @@
           });
         }
 
-        // 2. Build and Download PDF using pdfMake
-        const docDefinition = {
-          pageSize: 'A4',
-          pageMargins: [40, 40, 40, 40],
-          background: function() {
-            return { canvas: [{ type: 'rect', x: 0, y: 0, w: 595.28, h: 841.89, color: '#030305' }] };
-          },
-          content: [
-            { text: 'FACULTY OF ENGINEERING • UNIVERSITY OF JAFFNA', fontSize: 10, alignment: 'center', color: '#d97706', bold: true, margin: [0, 0, 0, 5] },
-            { text: 'E-WEEK 2026', fontSize: 26, alignment: 'center', color: '#fbbf24', bold: true, font: 'Helvetica', margin: [0, 0, 0, 2] },
-            { text: 'OFFICIAL TEAM ROSTER CARD', fontSize: 12, alignment: 'center', color: '#9ca3af', margin: [0, 0, 0, 20] },
-            
-            {
-              columns: [
-                { text: `BATCH REALM: ${authenticatedBatch}`, bold: true, color: '#f3f4f6', fontSize: 11 },
-                { text: `EVENT: ${eventName.toUpperCase()}`, bold: true, color: '#f3f4f6', fontSize: 11, alignment: 'right' }
-              ],
-              margin: [0, 0, 0, 15]
-            },
-            
-            {
-              table: {
-                headerRows: 1,
-                widths: ['12%', '58%', '30%'],
-                body: tableBody
-              },
-              layout: {
-                fillColor: function (rowIndex) {
-                  return (rowIndex === 0) ? '#1f160e' : (rowIndex % 2 === 0 ? '#0d0c11' : '#030305');
-                },
-                hLineWidth: function () { return 0.5; },
-                vLineWidth: function () { return 0.5; },
-                hLineColor: function () { return '#374151'; },
-                vLineColor: function () { return '#374151'; }
-              }
-            },
-
-            { text: `Date Submitted: ${today}`, fontSize: 9, color: '#6b7280', alignment: 'right', margin: [0, 25, 0, 0] },
-            { text: 'Valar Morghulis • Official Tournament Record', fontSize: 9, color: '#4b5563', alignment: 'center', margin: [0, 40, 0, 0] }
-          ],
-          defaultStyle: {
-            font: 'Helvetica',
-            color: '#d1d5db',
-            fontSize: 10
-          }
-        };
-
-        if (typeof pdfMake !== 'undefined' && pdfMake.createPdf) {
-          pdfMake.createPdf(docDefinition).download(`${authenticatedBatch}_${eventName}_TeamCard.pdf`);
-        } else {
-          throw new Error("pdfMake library not loaded.");
-        }
-
-        alert(`Success! Google Sheet updated and Team Card PDF downloaded.`);
+        alert(`Success! Data synced to the "${eventName}" tab in your ${authenticatedBatch} spreadsheet. Click OK to save your Team Card PDF.`);
+        
+        // Trigger native browser print/save-to-PDF dialog
+        window.print();
 
       } catch (err) {
         console.error(err);
-        // Fallback print render if pdfmake encounters any client issue
-        window.print();
+        alert("Execution Error: " + err.message);
       } finally {
         submitBtn.disabled = false;
-        btnLabel.innerText = "Sync Google Sheet & Download PDF (.pdf)";
+        btnLabel.innerText = "Sync Sheet & Save as PDF (.pdf)";
       }
     });
 

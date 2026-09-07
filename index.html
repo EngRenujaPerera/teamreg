@@ -349,6 +349,7 @@
         audioBadgeContainer.classList.remove("hidden");
 
         playAudio();
+        clearAllInputs(); // Clear form on login
         updateSheetBanner();
       } else {
         loginError.classList.remove("hidden");
@@ -360,17 +361,17 @@
       pauseAudio();
       audioBadgeContainer.classList.add("hidden");
       document.getElementById("loginForm").reset();
+      clearAllInputs();
       portalScreen.classList.add("hidden");
       loginScreen.classList.remove("hidden");
     });
 
     /******************************************************************
      * 3. MASTER SPREADSHEET URLS PER BATCH
-     * Paste your single spreadsheet URL for each batch here:
      ******************************************************************/
     const BATCH_SPREADSHEET_URLS = {
       "E22": "",
-      "E23": "https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit", // <-- Paste your E23 Spreadsheet link here
+      "E23": "https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit",
       "E24": "",
       "E25": ""
     };
@@ -396,10 +397,26 @@
       playersContainer.appendChild(row);
     }
 
+    function clearAllInputs() {
+      for (let i = 1; i <= 20; i++) {
+        const nameInput = document.getElementById(`player_${i}_name`);
+        const enumInput = document.getElementById(`player_${i}_enum`);
+        if (nameInput) nameInput.value = "";
+        if (enumInput) enumInput.value = "";
+      }
+      const sportSel = document.getElementById("sportSelect");
+      if (sportSel) sportSel.value = "";
+    }
+
     const sportSelect = document.getElementById("sportSelect");
     const sheetBanner = document.getElementById("sheetLinkBanner");
     const sheetStatusText = document.getElementById("sheetStatusText");
     const openSheetBtn = document.getElementById("openSheetBtn");
+
+    sportSelect.addEventListener("change", () => {
+      clearAllInputs(); // Automatically wipe previous rows whenever sport changes
+      updateSheetBanner();
+    });
 
     function updateSheetBanner() {
       if (!authenticatedBatch) return;
@@ -422,8 +439,6 @@
         openSheetBtn.classList.add("hidden");
       }
     }
-
-    sportSelect.addEventListener("change", updateSheetBanner);
 
     /******************************************************************
      * 4. FORM SUBMIT: SYNC SHEET & PRINT PDF
@@ -454,7 +469,6 @@
       }
 
       try {
-        // Send data to Google Sheet Apps Script Backend (routes straight to the sport's tab)
         if (GOOGLE_APPS_SCRIPT_URL) {
           await fetch(GOOGLE_APPS_SCRIPT_URL, {
             method: "POST",
@@ -469,8 +483,6 @@
         }
 
         alert(`Success! Data synced to the "${eventName}" tab in your ${authenticatedBatch} spreadsheet. Click OK to save your Team Card PDF.`);
-        
-        // Trigger native browser print/save-to-PDF dialog
         window.print();
 
       } catch (err) {

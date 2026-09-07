@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>E-Week 2026 | Team Registration</title>
+  <title>E-Week 2026 | PDF Team Registration & Ledger</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -13,10 +13,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Cinzel+Decorative:wght@700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Highly Reliable Unpkg & cdnjs CDNs -->
-  <script src="https://unpkg.com/pizzip@3.1.6/dist/pizzip.min.js"></script>
-  <script src="https://unpkg.com/docxtemplater@3.45.0/build/docxtemplater.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <!-- PDFMake for direct PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
   <style>
     body {
@@ -254,7 +253,7 @@
         <div class="pt-3">
           <button type="submit" id="submitBtn" class="w-full relative group overflow-hidden bg-gradient-to-r from-red-950 via-red-900 to-amber-950 hover:from-red-900 hover:to-amber-900 text-amber-100 font-cinzel font-bold tracking-[0.25em] text-sm uppercase py-4 px-6 rounded-xl border border-amber-500/40 shadow-[0_0_25px_rgba(185,28,28,0.3)] transition-all duration-300 flex items-center justify-center space-x-3">
             <img src="logo.png" onerror="this.src='https://lh3.googleusercontent.com/a/ACg8ocKVCZ3dwhUxDnuDbv2TfiSLT54QDnjOOAb-ke-HPQSY0R6qt4o=s360-c-no';" class="w-6 h-6 rounded-full border border-amber-400/70 object-cover group-hover:rotate-12 transition-transform duration-300" alt="sigil" />
-            <span id="btnLabel">Download Official Team Card (.docx)</span>
+            <span id="btnLabel">Sync Google Sheet & Download PDF (.pdf)</span>
             <img src="logo.png" onerror="this.src='https://lh3.googleusercontent.com/a/ACg8ocKVCZ3dwhUxDnuDbv2TfiSLT54QDnjOOAb-ke-HPQSY0R6qt4o=s360-c-no';" class="w-6 h-6 rounded-full border border-amber-400/70 object-cover group-hover:-rotate-12 transition-transform duration-300" alt="sigil" />
           </button>
         </div>
@@ -365,8 +364,10 @@
     });
 
     /******************************************************************
-     * 3. GOOGLE SHEET DIRECT LINKS REGISTRY
+     * 3. GOOGLE SHEET APPS SCRIPT URL & LINKS
      ******************************************************************/
+    const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxkFJsbdHQFZDAiFYWXyCIUvGbmbt0PxGqSGjm_FCEFvjSIC11CUEFyrhlcK30pzJ9fBg/exec";
+
     const GOOGLE_SHEET_URLS = {
       "E22": {
         "Football": "", "Badminton": "", "Volleyball": "", "Netball": "",
@@ -375,7 +376,7 @@
       },
       "E23": {
         "Football": "", "Badminton": "", "Volleyball": "", "Netball": "",
-        "Cricket": "hhttps://script.google.com/macros/s/AKfycbxkFJsbdHQFZDAiFYWXyCIUvGbmbt0PxGqSGjm_FCEFvjSIC11CUEFyrhlcK30pzJ9fBg/exec", 
+        "Cricket": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit", 
         "Carrom": "", "Chess": "", "Table Tennis": "",
         "Elle": "", "Basket Ball": "", "Athletics": ""
       },
@@ -440,7 +441,7 @@
     sportSelect.addEventListener("change", updateSheetBanner);
 
     /******************************************************************
-     * 4. FORM SUBMIT: DOWNLOAD FILLED TEAM CARD
+     * 4. FORM SUBMIT: SYNC GOOGLE SHEET & DOWNLOAD PDF
      ******************************************************************/
     document.getElementById("teamCardForm").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -448,56 +449,114 @@
       const btnLabel = document.getElementById("btnLabel");
 
       submitBtn.disabled = true;
-      btnLabel.innerText = "Forging Official Team Card...";
+      btnLabel.innerText = "Syncing Sheet & Generating PDF...";
 
       const eventName = sportSelect.value;
       const today = new Date().toLocaleDateString("en-GB");
 
-      const docxPayload = {
-        batch: authenticatedBatch,
-        event: eventName,
-        date_submitted: today
-      };
+      const playersList = [];
+      const tableBody = [
+        [
+          { text: 'Rank', bold: true, fillColor: '#1f160e', color: '#fbbf24', alignment: 'center' },
+          { text: 'Player Full Name', bold: true, fillColor: '#1f160e', color: '#fbbf24' },
+          { text: 'Registration No.', bold: true, fillColor: '#1f160e', color: '#fbbf24' }
+        ]
+      ];
 
+      let count = 0;
       for (let i = 1; i <= 20; i++) {
-        docxPayload[`player_${i}_name`] = document.getElementById(`player_${i}_name`).value.trim();
-        docxPayload[`player_${i}_enum`] = document.getElementById(`player_${i}_enum`).value.trim();
+        const nameVal = document.getElementById(`player_${i}_name`).value.trim();
+        const enumVal = document.getElementById(`player_${i}_enum`).value.trim();
+        
+        if (nameVal || enumVal) {
+          count++;
+          playersList.push({ name: nameVal, enum: enumVal });
+          tableBody.push([
+            { text: count.toString(), alignment: 'center' },
+            { text: nameVal || '-' },
+            { text: enumVal ? enumVal.toUpperCase() : '-' }
+          ]);
+        }
+      }
+
+      if (count === 0) {
+        alert("Please enter at least one player in the roster.");
+        submitBtn.disabled = false;
+        btnLabel.innerText = "Sync Google Sheet & Download PDF (.pdf)";
+        return;
       }
 
       try {
-        if (typeof PizZip === 'undefined' || typeof window.docxtemplater === 'undefined') {
-          throw new Error("Document generation libraries failed to load from CDN. Check your internet connection.");
+        // 1. Send data to Google Sheet via Apps Script Web App (No-Cors mode for browser fetch)
+        if (GOOGLE_APPS_SCRIPT_URL) {
+          await fetch(GOOGLE_APPS_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              batch: authenticatedBatch,
+              sport: eventName,
+              players: playersList
+            })
+          });
         }
 
-        const response = await fetch("team_cards.docx");
-        if (!response.ok) {
-          throw new Error("Could not find 'team_cards.docx' in project directory.");
-        }
-        const arrayBuffer = await response.arrayBuffer();
+        // 2. Build and Download PDF
+        const docDefinition = {
+          pageSize: 'A4',
+          pageMargins: [40, 40, 40, 40],
+          background: function() {
+            return { canvas: [{ type: 'rect', x: 0, y: 0, w: 595.28, h: 841.89, color: '#030305' }] };
+          },
+          content: [
+            { text: 'FACULTY OF ENGINEERING • UNIVERSITY OF JAFFNA', fontSize: 10, alignment: 'center', color: '#d97706', bold: true, margin: [0, 0, 0, 5] },
+            { text: 'E-WEEK 2026', fontSize: 26, alignment: 'center', color: '#fbbf24', bold: true, font: 'Helvetica', margin: [0, 0, 0, 2] },
+            { text: 'OFFICIAL TEAM ROSTER CARD', fontSize: 12, alignment: 'center', color: '#9ca3af', margin: [0, 0, 0, 20] },
+            
+            {
+              columns: [
+                { text: `BATCH REALM: ${authenticatedBatch}`, bold: true, color: '#f3f4f6', fontSize: 11 },
+                { text: `EVENT: ${eventName.toUpperCase()}`, bold: true, color: '#f3f4f6', fontSize: 11, alignment: 'right' }
+              ],
+              margin: [0, 0, 0, 15]
+            },
+            
+            {
+              table: {
+                headerRows: 1,
+                widths: ['12%', '58%', '30%'],
+                body: tableBody
+              },
+              layout: {
+                fillColor: function (rowIndex) {
+                  return (rowIndex === 0) ? '#1f160e' : (rowIndex % 2 === 0 ? '#0d0c11' : '#030305');
+                },
+                hLineWidth: function () { return 0.5; },
+                vLineWidth: function () { return 0.5; },
+                hLineColor: function () { return '#374151'; },
+                vLineColor: function () { return '#374151'; }
+              }
+            },
 
-        const zip = new PizZip(arrayBuffer);
-        const doc = new window.docxtemplater(zip, {
-          paragraphLoop: true,
-          linebreaks: true,
-        });
+            { text: `Date Submitted: ${today}`, fontSize: 9, color: '#6b7280', alignment: 'right', margin: [0, 25, 0, 0] },
+            { text: 'Valar Morghulis • Official Tournament Record', fontSize: 9, color: '#4b5563', alignment: 'center', margin: [0, 40, 0, 0] }
+          ],
+          defaultStyle: {
+            font: 'Helvetica',
+            color: '#d1d5db',
+            fontSize: 10
+          }
+        };
 
-        doc.render(docxPayload);
-
-        const filledBlob = doc.getZip().generate({
-          type: "blob",
-          mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        });
-
-        saveAs(filledBlob, `${authenticatedBatch}_${eventName}_TeamCard.docx`);
-        
-        alert(`Team Card for ${authenticatedBatch} - ${eventName} successfully generated and downloaded!`);
+        pdfMake.createPdf(docDefinition).download(`${authenticatedBatch}_${eventName}_TeamCard.pdf`);
+        alert(`Success! Google Sheet updated and Team Card PDF downloaded.`);
 
       } catch (err) {
         console.error(err);
-        alert("Generation Error: " + err.message);
+        alert("Execution Error: " + err.message);
       } finally {
         submitBtn.disabled = false;
-        btnLabel.innerText = "Download Official Team Card (.docx)";
+        btnLabel.innerText = "Sync Google Sheet & Download PDF (.pdf)";
       }
     });
 

@@ -349,7 +349,7 @@
         audioBadgeContainer.classList.remove("hidden");
 
         playAudio();
-        clearAllInputs(); // Clear form on login
+        clearInputFieldsOnly(); // Clear player inputs on login
         updateSheetBanner();
       } else {
         loginError.classList.remove("hidden");
@@ -361,7 +361,7 @@
       pauseAudio();
       audioBadgeContainer.classList.add("hidden");
       document.getElementById("loginForm").reset();
-      clearAllInputs();
+      clearInputFieldsOnly();
       portalScreen.classList.add("hidden");
       loginScreen.classList.remove("hidden");
     });
@@ -397,15 +397,13 @@
       playersContainer.appendChild(row);
     }
 
-    function clearAllInputs() {
+    function clearInputFieldsOnly() {
       for (let i = 1; i <= 20; i++) {
         const nameInput = document.getElementById(`player_${i}_name`);
         const enumInput = document.getElementById(`player_${i}_enum`);
         if (nameInput) nameInput.value = "";
         if (enumInput) enumInput.value = "";
       }
-      const sportSel = document.getElementById("sportSelect");
-      if (sportSel) sportSel.value = "";
     }
 
     const sportSelect = document.getElementById("sportSelect");
@@ -414,7 +412,7 @@
     const openSheetBtn = document.getElementById("openSheetBtn");
 
     sportSelect.addEventListener("change", () => {
-      clearAllInputs(); // Automatically wipe previous rows whenever sport changes
+      clearInputFieldsOnly(); // Clears only the text inputs when sport is selected/changed
       updateSheetBanner();
     });
 

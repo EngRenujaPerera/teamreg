@@ -13,9 +13,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Cinzel+Decorative:wght@700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Client-side docx generation -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.6/pizzip.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.45.0/docxtemplater.js"></script>
+  <!-- Robust Client-side docx libraries with CDNs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.4/pizzip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.37.2/docxtemplater.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
   <style>
@@ -366,7 +366,6 @@
 
     /******************************************************************
      * 3. GOOGLE SHEET DIRECT LINKS REGISTRY
-     * PASTE YOUR GOOGLE SHEET URLS FOR EACH BATCH & SPORT BELOW:
      ******************************************************************/
     const GOOGLE_SHEET_URLS = {
       "E22": {
@@ -376,7 +375,7 @@
       },
       "E23": {
         "Football": "", "Badminton": "", "Volleyball": "", "Netball": "",
-        "Cricket": "https://script.google.com/macros/s/AKfycbxkFJsbdHQFZDAiFYWXyCIUvGbmbt0PxGqSGjm_FCEFvjSIC11CUEFyrhlcK30pzJ9fBg/exec", 
+        "Cricket": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit", 
         "Carrom": "", "Chess": "", "Table Tennis": "",
         "Elle": "", "Basket Ball": "", "Athletics": ""
       },
@@ -392,7 +391,7 @@
       }
     };
 
-    // Render 20 Player Rows[cite: 1]
+    // Render 20 Player Rows
     const playersContainer = document.getElementById("playersContainer");
     for (let i = 1; i <= 20; i++) {
       const row = document.createElement("div");
@@ -466,6 +465,10 @@
       }
 
       try {
+        if (typeof PizZip === 'undefined' || typeof window.docxtemplater === 'undefined') {
+          throw new Error("Document generation libraries failed to load from CDN. Check your internet connection.");
+        }
+
         const response = await fetch("team_cards.docx");
         if (!response.ok) {
           throw new Error("Could not find 'team_cards.docx' in project directory.");

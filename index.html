@@ -3,33 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>E-Week 2026 | Team Registration Portal</title>
-  
+  <title>E-Week 2026 | Team Registration & Team Card</title>
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Cinzel+Decorative:wght@700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Docxtemplater & FileSaver for template-based downloads -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.6/pizzip.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.45.0/docxtemplater.js"></script>
+  <!-- Docxtemplater & FileSaver -->
+  <script src="https://unpkg.com/pizzip@3.1.6/dist/pizzip.min.js"></script>
+  <script src="https://unpkg.com/docxtemplater@3.45.0/build/docxtemplater.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
   <style>
     body {
       font-family: 'Inter', sans-serif;
       background-color: #030305;
-      color: #d1d5db;
+      color: #e2e8f0;
       overflow-x: hidden;
     }
-    
-    .font-cinzel { font-family: 'Cinzel', serif; }
-    .font-decorative { font-family: 'Cinzel Decorative', cursive; }
 
-    /* Background Video Layer */
+    .font-cinzel { font-family: 'Cinzel', serif; }
+
+    /* Login Background Video Layer */
     .bg-video-container {
       position: fixed;
       inset: 0;
@@ -57,6 +56,24 @@
       background: linear-gradient(to bottom, rgba(3, 3, 5, 0.65) 0%, rgba(3, 3, 5, 0.88) 60%, #030305 100%);
     }
 
+    /* Portal Static Background Image Layer */
+    .portal-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image: url('bg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #030305;
+    }
+
+    .portal-bg-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(3, 3, 5, 0.78) 0%, rgba(3, 3, 5, 0.92) 80%, #030305 100%);
+    }
+
     #emberCanvas {
       position: fixed;
       inset: 0;
@@ -64,89 +81,114 @@
       z-index: 1;
     }
 
+    /* Valyrian Shield & Panels */
     .valyrian-shield {
-      background: linear-gradient(160deg, rgba(16, 15, 20, 0.85) 0%, rgba(8, 7, 12, 0.94) 100%);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(212, 175, 55, 0.35);
-      box-shadow: 
-        0 30px 60px rgba(0, 0, 0, 0.95), 
-        0 0 35px rgba(212, 175, 55, 0.12),
-        inset 0 1px 0 rgba(255, 255, 255, 0.12),
-        inset 0 0 30px rgba(212, 175, 55, 0.05);
-      animation: floatEffect 6s ease-in-out infinite;
-    }
-
-    @keyframes floatEffect {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-8px); }
+      background: linear-gradient(160deg, rgba(14, 15, 20, 0.90) 0%, rgba(6, 7, 10, 0.97) 100%);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid rgba(203, 213, 225, 0.35);
+      box-shadow:
+        0 35px 70px rgba(0, 0, 0, 0.95),
+        0 0 40px rgba(148, 163, 184, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        inset 0 0 35px rgba(148, 163, 184, 0.04);
     }
 
     .sigil-glow {
-      border: 2px solid rgba(212, 175, 55, 0.8);
-      box-shadow: 0 0 25px rgba(212, 175, 55, 0.35), inset 0 0 15px rgba(0, 0, 0, 0.9);
+      border: 2px solid rgba(203, 213, 225, 0.8);
+      box-shadow: 0 0 35px rgba(148, 163, 184, 0.4), inset 0 0 20px rgba(0, 0, 0, 0.9);
+    }
+
+    /* GOT Iron-Bar Nav Bar */
+    .valyrian-nav-bar {
+      background: linear-gradient(90deg, rgba(10, 11, 15, 0.94) 0%, rgba(22, 24, 32, 0.96) 50%, rgba(10, 11, 15, 0.94) 100%);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(203, 213, 225, 0.3);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    /* Cinematic Spinner */
+    .valyrian-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(148, 163, 184, 0.2);
+      border-top: 3px solid rgba(245, 158, 11, 0.9);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     ::-webkit-scrollbar { width: 7px; }
     ::-webkit-scrollbar-track { background: #050406; }
     ::-webkit-scrollbar-thumb {
-      background: #2a1111;
+      background: #1e293b;
       border-radius: 4px;
-      border: 1px solid #7c2d12;
+      border: 1px solid #475569;
     }
-    ::-webkit-scrollbar-thumb:hover { background: #b91c1c; }
+    ::-webkit-scrollbar-thumb:hover { background: #64748b; }
   </style>
 </head>
-<body class="selection:bg-red-950 selection:text-amber-200">
+<body class="selection:bg-slate-800 selection:text-slate-200">
 
-  <!-- Background Video & Overlay Layers -->
-  <div class="bg-video-container">
-    <video autoplay muted loop playsinline>
+  <!-- Background Video Container (Active ONLY during Login) -->
+  <div id="loginBgContainer" class="bg-video-container">
+    <video id="bgVideo" autoplay muted loop playsinline>
       <source src="bg.mp4" type="video/mp4">
     </video>
     <div class="bg-video-overlay"></div>
   </div>
 
+  <!-- Static Background Image Container (Active during Portal) -->
+  <div id="portalBgContainer" class="hidden portal-bg">
+    <div class="portal-bg-overlay"></div>
+  </div>
+
+  <!-- Realistic Ember Canvas Particle Engine -->
   <canvas id="emberCanvas"></canvas>
 
   <!-- Background Soundtrack -->
   <audio id="bgAudio" src="track.mp3" loop preload="auto"></audio>
 
-  <!-- Audio Toggle Badge -->
-  <aside id="audioBadgeContainer" class="hidden fixed top-4 right-4 z-40">
-    <button id="audioToggleBtn" type="button" class="bg-black/80 hover:bg-stone-950 text-amber-200 border border-amber-400 rounded-full px-4 py-2 text-xs font-cinzel tracking-wider flex items-center space-x-2 shadow-[0_0_15px_rgba(212,175,55,0.4)] transition-all duration-300">
-      <span id="audioIcon">🔊</span>
-      <span id="audioStatusText">Soundtrack: On</span>
-    </button>
-  </aside>
+  <!-- ================= GOT THEME LOADING BUFFER ================= -->
+  <div id="loadingOverlay" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center space-y-4">
+    <div class="valyrian-spinner"></div>
+    <div class="text-center space-y-1">
+      <p class="text-xs font-cinzel font-bold text-amber-400 tracking-[0.3em] uppercase">Consulting the Citadel Archives</p>
+      <p class="text-[10px] font-cinzel text-slate-400 tracking-wider">Synchronizing realm data...</p>
+    </div>
+  </div>
 
   <!-- ================= 1. LOGIN SCREEN ================= -->
-  <div id="loginScreen" class="relative z-30 min-h-screen flex items-center justify-center px-4 py-12">
-    <div class="valyrian-shield max-w-md w-full p-8 rounded-2xl relative">
-      <div class="text-center space-y-3 mb-6">
-        <div class="w-16 h-16 mx-auto rounded-full overflow-hidden sigil-glow bg-black flex items-center justify-center">
+  <div id="loginScreen" class="relative z-30 min-h-screen flex items-center justify-center px-4 py-8">
+    <div class="valyrian-shield max-w-md w-full p-6 sm:p-8 rounded-2xl relative">
+      <div class="text-center space-y-2 mb-5">
+        <div class="w-20 h-20 mx-auto rounded-full overflow-hidden sigil-glow bg-black flex items-center justify-center">
           <img src="logo.png" onerror="this.src='https://lh3.googleusercontent.com/a/ACg8ocKVCZ3dwhUxDnuDbv2TfiSLT54QDnjOOAb-ke-HPQSY0R6qt4o=s360-c-no';" alt="Insignia" class="w-full h-full object-cover" />
         </div>
-        <h2 class="text-2xl font-bold font-cinzel text-amber-300 tracking-wider">LOGIN</h2>
-        <p class="text-xs text-stone-400 font-cinzel">Verify credentials to unlock team roster creation</p>
+        <h2 class="text-xl font-bold font-cinzel text-slate-200 tracking-wider">LOGIN</h2>
+        <p class="text-[11px] text-slate-400 font-cinzel">Verify credentials (Rep or Admin) to unlock team portal</p>
       </div>
 
-      <form id="loginForm" class="space-y-5">
+      <form id="loginForm" class="space-y-4">
         <div>
-          <label class="block text-xs uppercase tracking-widest text-amber-400 font-cinzel font-bold mb-1.5">Username</label>
-          <input type="text" id="usernameInput" required class="w-full bg-[#0d0c11] border border-stone-800 focus:border-amber-500 rounded-lg p-3 text-sm text-stone-200 focus:outline-none focus:ring-1 focus:ring-amber-500 transition-all font-mono" />
+          <label class="block text-[11px] uppercase tracking-widest text-slate-300 font-cinzel font-bold mb-1">Username</label>
+          <input type="text" id="usernameInput" required class="w-full bg-[#0d0c11] border border-slate-800 focus:border-slate-400 rounded-lg p-2.5 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-slate-400 transition-all font-mono" placeholder="rep_e23 or admin" />
         </div>
 
         <div>
-          <label class="block text-xs uppercase tracking-widest text-amber-400 font-cinzel font-bold mb-1.5">Passkey</label>
-          <input type="password" id="passwordInput" required class="w-full bg-[#0d0c11] border border-stone-800 focus:border-amber-500 rounded-lg p-3 text-sm text-stone-200 focus:outline-none focus:ring-1 focus:ring-amber-500 transition-all" />
+          <label class="block text-[11px] uppercase tracking-widest text-slate-300 font-cinzel font-bold mb-1">Passkey</label>
+          <input type="password" id="passwordInput" required class="w-full bg-[#0d0c11] border border-slate-800 focus:border-slate-400 rounded-lg p-2.5 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-slate-400 transition-all" />
         </div>
 
-        <div id="loginError" class="hidden text-xs text-red-400 font-cinzel bg-red-950/40 border border-red-900/60 p-2.5 rounded-lg text-center">
-          Invalid representative credentials.
+        <div id="loginError" class="hidden text-xs text-rose-400 font-cinzel bg-rose-950/40 border border-rose-900/60 p-2 rounded-lg text-center">
+          Invalid representative or admin credentials.
         </div>
 
-        <button type="submit" class="w-full bg-gradient-to-r from-red-950 via-red-900 to-amber-950 hover:from-red-900 hover:to-amber-900 text-amber-100 font-cinzel font-bold tracking-[0.2em] text-xs uppercase py-3.5 px-6 rounded-xl border border-amber-500/50 shadow-[0_0_20px_rgba(212,175,55,0.3)] transition-all">
+        <button type="submit" class="w-full bg-gradient-to-r from-slate-900 via-slate-800 to-zinc-900 hover:from-slate-800 hover:to-zinc-800 text-slate-100 font-cinzel font-bold tracking-[0.2em] text-xs uppercase py-3 px-6 rounded-xl border border-slate-500/50 shadow-[0_0_20px_rgba(148,163,184,0.2)] transition-all">
           Authorize Access
         </button>
       </form>
@@ -154,54 +196,74 @@
   </div>
 
   <!-- ================= 2. REGISTRATION PORTAL ================= -->
-  <div id="portalScreen" class="hidden relative z-10 max-w-5xl mx-auto py-10 px-4 sm:px-6 space-y-8">
+  <div id="portalScreen" class="hidden relative z-10 max-w-7xl mx-auto py-6 px-4 sm:px-8 space-y-6">
 
-    <header class="text-center space-y-4">
+    <!-- Creative GOT Iron-Bar Nav -->
+    <nav class="valyrian-nav-bar rounded-2xl px-5 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 rounded-full border border-amber-500/50 bg-black flex items-center justify-center shadow-[0_0_10px_rgba(245,158,11,0.3)]">
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
+        </div>
+        <span id="repBadge" class="text-xs font-cinzel font-bold text-amber-200 tracking-wider uppercase">
+          Authorized: Representative E23
+        </span>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <!-- Audio Control Toggle -->
+        <button id="audioToggleBtn" type="button" class="bg-black/60 hover:bg-black text-slate-300 border border-slate-600/60 rounded-full px-3.5 py-1.5 text-[11px] font-cinzel tracking-wider flex items-center space-x-2 transition-all cursor-pointer">
+          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse" id="audioIndicatorDot"></span>
+          <span id="audioStatusText">Soundtrack: On</span>
+        </button>
+
+        <!-- Bend the Knee / Sign Out Button -->
+        <button id="logoutBtn" class="bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/60 rounded-full px-4 py-1.5 text-[11px] font-cinzel font-bold tracking-widest uppercase transition-all shadow-md cursor-pointer">
+          Bend the Knee (Sign Out)
+        </button>
+      </div>
+    </nav>
+
+    <!-- Clean Header -->
+    <header class="text-center py-4 px-4 space-y-3">
       <div class="inline-block relative">
-        <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-2 rounded-full overflow-hidden sigil-glow bg-black flex items-center justify-center transform transition-transform duration-500 hover:scale-105">
+        <div class="w-32 h-32 sm:w-40 sm:h-40 mx-auto rounded-full overflow-hidden sigil-glow bg-black flex items-center justify-center transform transition-transform duration-500 hover:scale-105">
           <img src="logo.png" onerror="this.src='https://lh3.googleusercontent.com/a/ACg8ocKVCZ3dwhUxDnuDbv2TfiSLT54QDnjOOAb-ke-HPQSY0R6qt4o=s360-c-no';" alt="Official Insignia" class="w-full h-full object-cover filter contrast-125" />
         </div>
-        <p class="text-[11px] uppercase tracking-[0.45em] text-amber-500/80 font-cinzel font-bold">
+        <p class="text-[11px] uppercase tracking-[0.4em] text-slate-300 font-cinzel font-bold mt-3">
           Faculty of Engineering • University of Jaffna
         </p>
       </div>
 
-      <h1 class="text-4xl sm:text-6xl font-black font-decorative tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-300 to-amber-600 drop-shadow-[0_8px_20px_rgba(0,0,0,0.95)]">
-        E-WEEK 2026
-      </h1>
-
-      <div class="flex items-center justify-center space-x-4">
-        <span id="repBadge" class="bg-amber-950/60 border border-amber-500/50 text-amber-300 font-cinzel text-xs uppercase px-4 py-1.5 rounded-full">
-          Authorized: Rep E22
-        </span>
-        <button id="logoutBtn" class="text-xs font-cinzel text-stone-400 hover:text-red-400 underline uppercase tracking-wider">
-          Sign Out
-        </button>
+      <div class="relative my-2 flex items-center justify-center">
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-slate-500/15 to-transparent blur-xl pointer-events-none"></div>
+        <img src="eweek.png" alt="E-Week 2026" class="relative max-w-[240px] sm:max-w-[300px] md:max-w-[380px] w-full h-auto object-contain filter drop-shadow-[0_10px_25px_rgba(0,0,0,0.95)]" />
       </div>
     </header>
 
-    <main class="valyrian-shield rounded-2xl p-6 sm:p-10 relative">
+    <main class="valyrian-shield rounded-3xl p-6 sm:p-12 relative">
       <div id="teamCardForm" class="space-y-8">
-        
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-stone-950/70 p-6 rounded-xl border border-stone-800/80 shadow-inner">
-          <div>
-            <label class="block text-xs uppercase tracking-widest text-amber-400 font-cinzel font-bold mb-2">
-              Batch Realm (Locked)
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-stone-950/70 p-6 rounded-2xl border border-slate-800/80 shadow-inner">
+          <div id="batchContainer">
+            <label class="block text-[11px] uppercase tracking-widest text-slate-300 font-cinzel font-bold mb-2">
+              Batch Realm <span id="batchRealmStatus" class="text-amber-400 lowercase text-[10px]">(locked)</span>
             </label>
-            <input type="text" id="batchSelect" readonly class="w-full bg-[#0d0c11] border border-amber-500/40 text-amber-300 font-bold rounded-lg p-3 text-sm font-cinzel cursor-not-allowed focus:outline-none" />
+            <div id="batchInputWrapper">
+              <input type="text" id="batchSelect" readonly class="w-full bg-[#0d0c11] border border-slate-500/40 text-slate-200 font-bold rounded-xl p-3 text-sm font-cinzel cursor-not-allowed focus:outline-none" />
+            </div>
           </div>
 
           <div>
-            <label class="block text-xs uppercase tracking-widest text-amber-400 font-cinzel font-bold mb-2">
+            <label class="block text-[11px] uppercase tracking-widest text-slate-300 font-cinzel font-bold mb-2">
               The Sport / Event
             </label>
-            <select id="sportSelect" class="w-full bg-[#0d0c11] border border-stone-800 text-stone-200 rounded-lg p-3 text-sm font-cinzel focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all cursor-pointer">
+            <select id="sportSelect" class="w-full bg-[#0d0c11] border border-slate-800 text-slate-200 rounded-xl p-3 text-sm font-cinzel focus:outline-none focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition-all cursor-pointer">
               <option value="">-- Choose Event --</option>
+              <option value="Cricket">Cricket</option>
               <option value="Football">Football</option>
               <option value="Badminton">Badminton</option>
               <option value="Volleyball">Volleyball</option>
               <option value="Netball">Netball</option>
-              <option value="Cricket">Cricket</option>
               <option value="Carrom">Carrom</option>
               <option value="Chess">Chess</option>
               <option value="Table Tennis">Table Tennis</option>
@@ -212,60 +274,46 @@
           </div>
         </div>
 
-        <!-- Google Sheet Direct Access Banner -->
-        <div id="sheetLinkBanner" class="hidden p-4 rounded-xl border transition-all duration-300">
-          <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div class="flex items-center space-x-3 text-center sm:text-left">
-              <span class="text-2xl filter drop-shadow">📊</span>
-              <div>
-                <p class="text-[10px] font-bold uppercase tracking-[0.25em] text-stone-400 font-cinzel">Master Spreadsheet Ledger</p>
-                <p id="sheetStatusText" class="text-sm font-semibold text-amber-300 font-cinzel">Access Spreadsheet</p>
-              </div>
-            </div>
-            <a id="openSheetBtn" href="#" target="_blank" class="text-xs font-cinzel font-bold uppercase tracking-wider bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/60 px-4 py-2 rounded-lg transition-all shadow-sm">
-              Open Spreadsheet ↗
-            </a>
-          </div>
-        </div>
-
-        <!-- 20 Player Roster Slots -->
+        <!-- 20 Player Roster Slots with Cricket Roles & Captain Designation -->
         <div class="space-y-3">
           <div class="flex flex-col sm:flex-row justify-between items-baseline gap-1">
-            <h2 class="text-base sm:text-lg font-bold font-cinzel tracking-wider text-amber-300 flex items-center gap-2">
-              <img src="logo.png" onerror="this.src='https://lh3.googleusercontent.com/a/ACg8ocKVCZ3dwhUxDnuDbv2TfiSLT54QDnjOOAb-ke-HPQSY0R6qt4o=s360-c-no';" class="w-5 h-5 rounded-full border border-amber-500/60 inline-block object-cover" alt="icon" />
-              <span>Roster of Champions (Up to 20 Players)</span>
+            <h2 class="text-sm sm:text-base font-bold font-cinzel tracking-wider text-slate-200 flex items-center gap-2">
+              <img src="logo.png" onerror="this.src='https://lh3.googleusercontent.com/a/ACg8ocKVCZ3dwhUxDnuDbv2TfiSLT54QDnjOOAb-ke-HPQSY0R6qt4o=s360-c-no';" class="w-5 h-5 rounded-full border border-slate-500/60 inline-block object-cover" alt="icon" />
+              <span>Squad Roster, Roles & Captain Designation (Up to 20 Players)</span>
             </h2>
-            <span id="loadingStatus" class="text-[11px] text-amber-400 font-cinzel"></span>
           </div>
 
-          <div class="border border-stone-800 rounded-xl overflow-hidden bg-black/70 shadow-2xl">
-            <div class="grid grid-cols-12 bg-stone-900/90 px-4 py-3 font-cinzel text-[11px] text-amber-400/90 font-bold uppercase tracking-widest border-b border-stone-800">
-              <div class="col-span-1 text-center text-stone-500">Rank</div>
-              <div class="col-span-7 sm:col-span-8 px-2">Player Full Name</div>
-              <div class="col-span-4 sm:col-span-3 px-2">Registration No.</div>
+          <div class="border border-slate-800 rounded-2xl overflow-hidden bg-black/70 shadow-2xl">
+            <!-- Table Header -->
+            <div id="tableHeader" class="grid grid-cols-12 bg-slate-950/90 px-4 py-3 font-cinzel text-xs text-slate-300 font-bold uppercase tracking-widest border-b border-slate-800">
+              <div class="col-span-1 text-center text-slate-500">Rank</div>
+              <div class="col-span-5 px-3">Player Full Name</div>
+              <div class="col-span-3 px-3">Reg. No.</div>
+              <div id="roleHeaderCol" class="hidden col-span-3 px-3">Cricket Role</div>
+              <div class="col-span-3 px-3 text-center">Captain?</div>
             </div>
 
-            <div id="playersContainer" class="divide-y divide-stone-900/80">
+            <div id="playersContainer" class="divide-y divide-slate-900/80">
               <!-- Rendered via JS -->
             </div>
           </div>
         </div>
 
-        <!-- Dual Action Buttons -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3">
-          <button type="button" id="syncBtn" class="w-full bg-stone-900 hover:bg-stone-800 text-amber-300 font-cinzel font-bold tracking-[0.2em] text-xs uppercase py-4 px-4 rounded-xl border border-amber-500/40 shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer">
-            <span>🔄 Sync to Spreadsheet</span>
+        <!-- Action Buttons -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+          <button type="button" id="syncBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-slate-200 font-cinzel font-bold tracking-[0.2em] text-xs uppercase py-4 px-4 rounded-xl border border-slate-600/40 shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer">
+            <span>Sync Sheet</span>
           </button>
 
-          <button type="button" id="downloadDocxBtn" class="w-full bg-gradient-to-r from-red-950 via-red-900 to-amber-950 hover:from-red-900 hover:to-amber-900 text-amber-100 font-cinzel font-bold tracking-[0.2em] text-xs uppercase py-4 px-4 rounded-xl border border-amber-500/50 shadow-[0_0_20px_rgba(212,175,55,0.3)] transition-all flex items-center justify-center space-x-2 cursor-pointer">
-            <span>📜 Finalize & Download Team Card (.docx)</span>
+          <button type="button" id="finalizeBtn" class="w-full bg-gradient-to-r from-slate-900 via-slate-800 to-zinc-900 hover:from-slate-800 hover:to-zinc-800 text-slate-100 font-cinzel font-bold tracking-[0.2em] text-xs uppercase py-4 px-4 rounded-xl border border-slate-400/50 shadow-[0_0_20px_rgba(148,163,184,0.25)] transition-all flex items-center justify-center space-x-2 cursor-pointer">
+            <span>Finalize Team & Download Card</span>
           </button>
         </div>
 
       </div>
     </main>
 
-    <footer class="text-center text-stone-600 text-[11px] font-cinzel tracking-[0.3em] uppercase py-4">
+    <footer class="text-center text-slate-500 text-[11px] font-cinzel tracking-[0.3em] uppercase py-3">
       Faculty of Engineering • University of Jaffna • Valar Morghulis
     </footer>
   </div>
@@ -275,23 +323,24 @@
      * 1. AUDIO ENGINE (`track.mp3`)
      ******************************************************************/
     const bgAudio = document.getElementById("bgAudio");
-    const audioBadgeContainer = document.getElementById("audioBadgeContainer");
     const audioBtn = document.getElementById("audioToggleBtn");
-    const audioIcon = document.getElementById("audioIcon");
     const audioStatusText = document.getElementById("audioStatusText");
+    const audioIndicatorDot = document.getElementById("audioIndicatorDot");
+    const bgVideo = document.getElementById("bgVideo");
+    const loginBgContainer = document.getElementById("loginBgContainer");
+    const portalBgContainer = document.getElementById("portalBgContainer");
+    const loadingOverlay = document.getElementById("loadingOverlay");
 
     function setAudioUIPlaying() {
-      audioIcon.innerText = "🔊";
       audioStatusText.innerText = "Soundtrack: On";
-      audioBtn.classList.add("border-amber-400", "text-amber-200", "shadow-[0_0_15px_rgba(212,175,55,0.4)]");
-      audioBtn.classList.remove("border-amber-500/50", "text-stone-400");
+      audioIndicatorDot.className = "inline-block w-2 h-2 rounded-full bg-amber-500 animate-pulse";
+      audioBtn.classList.add("border-slate-400", "text-slate-200", "shadow-[0_0_15px_rgba(148,163,184,0.3)]");
     }
 
     function setAudioUIPaused() {
-      audioIcon.innerText = "🔈";
       audioStatusText.innerText = "Soundtrack: Off";
-      audioBtn.classList.remove("border-amber-400", "text-amber-200", "shadow-[0_0_15px_rgba(212,175,55,0.4)]");
-      audioBtn.classList.add("border-amber-500/50", "text-stone-400");
+      audioIndicatorDot.className = "inline-block w-2 h-2 rounded-full bg-rose-500";
+      audioBtn.classList.remove("border-slate-400", "text-slate-200", "shadow-[0_0_15px_rgba(148,163,184,0.3)]");
     }
 
     function playAudio() {
@@ -317,22 +366,25 @@
     });
 
     /******************************************************************
-     * 2. BATCH REPRESENTATIVE AUTHENTICATION
+     * 2. REPRESENTATIVE & MASTER ADMIN AUTHENTICATION
      ******************************************************************/
     const BATCH_ACCOUNTS = {
       "rep_e22": { pass: "e22@ewik26", batch: "E22" },
       "rep_e23": { pass: "e23@ewik26", batch: "E23" },
       "rep_e24": { pass: "e24@ewik26", batch: "E24" },
-      "rep_e25": { pass: "e25@ewik26", batch: "E25" }
+      "rep_e25": { pass: "e25@ewik26", batch: "E25" },
+      "admin":   { pass: "ewik26@admin", isAdmin: true }
     };
 
     let authenticatedBatch = null;
+    let isAdmin = false;
 
     const loginScreen = document.getElementById("loginScreen");
     const portalScreen = document.getElementById("portalScreen");
     const loginForm = document.getElementById("loginForm");
     const loginError = document.getElementById("loginError");
-    const batchField = document.getElementById("batchSelect");
+    const batchInputWrapper = document.getElementById("batchInputWrapper");
+    const batchRealmStatus = document.getElementById("batchRealmStatus");
     const repBadge = document.getElementById("repBadge");
     const logoutBtn = document.getElementById("logoutBtn");
 
@@ -342,19 +394,48 @@
       const pass = document.getElementById("passwordInput").value.trim();
 
       if (BATCH_ACCOUNTS[user] && BATCH_ACCOUNTS[user].pass === pass) {
-        authenticatedBatch = BATCH_ACCOUNTS[user].batch;
-        batchField.value = authenticatedBatch;
-        repBadge.innerText = `Authorized: Representative ${authenticatedBatch}`;
-        
         loginError.classList.add("hidden");
         loginScreen.classList.add("hidden");
         portalScreen.classList.remove("hidden");
-        audioBadgeContainer.classList.remove("hidden");
+
+        bgVideo.pause();
+        loginBgContainer.classList.add("hidden");
+        portalBgContainer.classList.remove("hidden");
 
         playAudio();
+
+        if (BATCH_ACCOUNTS[user].isAdmin) {
+          isAdmin = true;
+          repBadge.innerText = "Authorized: Master Admin";
+          batchRealmStatus.innerText = "(admin mode - select any batch)";
+
+          batchInputWrapper.innerHTML = `
+            <select id="batchSelect" class="w-full bg-[#0d0c11] border border-slate-800 text-slate-200 rounded-xl p-3 text-sm font-cinzel focus:outline-none focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition-all cursor-pointer">
+              <option value="E22">E22</option>
+              <option value="E23" selected>E23</option>
+              <option value="E24">E24</option>
+              <option value="E25">E25</option>
+            </select>
+          `;
+          authenticatedBatch = "E23";
+
+          document.getElementById("batchSelect").addEventListener("change", (ev) => {
+            authenticatedBatch = ev.target.value;
+            triggerDataFetch();
+          });
+        } else {
+          isAdmin = false;
+          authenticatedBatch = BATCH_ACCOUNTS[user].batch;
+          repBadge.innerText = `Authorized: Representative ${authenticatedBatch}`;
+          batchRealmStatus.innerText = "(locked)";
+
+          batchInputWrapper.innerHTML = `
+            <input type="text" id="batchSelect" value="${authenticatedBatch}" readonly class="w-full bg-[#0d0c11] border border-slate-500/40 text-slate-200 font-bold rounded-xl p-3 text-sm font-cinzel cursor-not-allowed focus:outline-none" />
+          `;
+        }
+
         sportSelect.value = "";
         clearUIInputs();
-        updateSheetBanner();
       } else {
         loginError.classList.add("hidden");
       }
@@ -362,40 +443,56 @@
 
     logoutBtn.addEventListener("click", () => {
       authenticatedBatch = null;
+      isAdmin = false;
       pauseAudio();
-      audioBadgeContainer.classList.add("hidden");
       document.getElementById("loginForm").reset();
       clearUIInputs();
       portalScreen.classList.add("hidden");
+
+      portalBgContainer.classList.add("hidden");
+      loginBgContainer.classList.remove("hidden");
+      bgVideo.play().catch(e => console.warn(e));
+
       loginScreen.classList.remove("hidden");
     });
 
     /******************************************************************
-     * 3. MASTER SPREADSHEET URLS & APPS SCRIPT ENDPOINT
+     * 3. APPS SCRIPT ENDPOINT & PERSISTENT LOADING WITH BUFFER
      ******************************************************************/
-    const BATCH_SPREADSHEET_URLS = {
-      "E22": "",
-      "E23": "https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit",
-      "E24": "",
-      "E25": ""
-    };
-
     const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxkFJsbdHQFZDAiFYWXyCIUvGbmbt0PxGqSGjm_FCEFvjSIC11CUEFyrhlcK30pzJ9fBg/exec";
 
-    // Render 20 Player Rows
+    // Build 20 Player Rows dynamically
     const playersContainer = document.getElementById("playersContainer");
+    const tableHeader = document.getElementById("tableHeader");
+    const roleHeaderCol = document.getElementById("roleHeaderCol");
+
     for (let i = 1; i <= 20; i++) {
       const row = document.createElement("div");
-      row.className = "grid grid-cols-12 px-3 py-2 items-center hover:bg-stone-900/40 transition-colors gap-2";
+      row.className = "player-row grid grid-cols-12 px-4 py-2.5 items-center hover:bg-stone-900/40 transition-colors gap-3";
+      row.dataset.index = i;
+
       row.innerHTML = `
-        <div class="col-span-1 text-center font-cinzel font-bold text-amber-500/70 text-xs">${i}</div>
-        <div class="col-span-7 sm:col-span-8 px-1">
-          <input type="text" id="player_${i}_name" placeholder="Full Name" 
-            class="w-full bg-[#08070b]/90 border border-stone-800 focus:border-amber-500/60 rounded px-3 py-1.5 text-xs sm:text-sm text-stone-200 placeholder-stone-700 focus:outline-none focus:ring-1 focus:ring-amber-500/40 transition-all font-light" />
+        <div class="col-span-1 text-center font-cinzel font-bold text-slate-400 text-sm">${i}</div>
+        <div class="col-span-5 px-2">
+          <input type="text" id="player_${i}_name" placeholder="Full Name"
+            class="w-full bg-[#08070b]/90 border border-slate-800 focus:border-slate-400 rounded-xl px-3.5 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-slate-400 font-light" />
         </div>
-        <div class="col-span-4 sm:col-span-3 px-1">
-          <input type="text" id="player_${i}_enum" placeholder="e.g. 2022/E/001" 
-            class="w-full bg-[#08070b]/90 border border-stone-800 focus:border-amber-500/60 rounded px-3 py-1.5 text-xs sm:text-sm text-stone-200 placeholder-stone-700 focus:outline-none focus:ring-1 focus:ring-amber-500/40 transition-all font-mono uppercase" />
+        <div class="col-span-3 px-2">
+          <input type="text" id="player_${i}_enum" placeholder="Reg. No."
+            class="w-full bg-[#08070b]/90 border border-slate-800 focus:border-slate-400 rounded-xl px-3.5 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-slate-400 font-mono uppercase" />
+        </div>
+        <div class="role-col hidden col-span-3 px-2">
+          <select id="player_${i}_role" class="w-full bg-[#08070b]/90 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-2 text-xs font-cinzel focus:outline-none focus:border-slate-400">
+            <option value="General">Player</option>
+            <option value="Batsman">Batsman</option>
+            <option value="Bowler">Bowler</option>
+            <option value="All-Rounder">All-Rounder</option>
+            <option value="Wicket-Keeper">Wicket-Keeper (WK)</option>
+          </select>
+        </div>
+        <div class="col-span-3 px-2 text-center flex items-center justify-center space-x-2">
+          <input type="radio" name="teamCaptain" id="player_${i}_captain" value="${i}" class="accent-amber-500 cursor-pointer w-4 h-4" />
+          <label for="player_${i}_captain" class="text-[11px] font-cinzel text-amber-300 cursor-pointer">Captain</label>
         </div>
       `;
       playersContainer.appendChild(row);
@@ -405,89 +502,96 @@
       for (let i = 1; i <= 20; i++) {
         document.getElementById(`player_${i}_name`).value = "";
         document.getElementById(`player_${i}_enum`).value = "";
+        const roleSel = document.getElementById(`player_${i}_role`);
+        if (roleSel) roleSel.value = "General";
+        document.getElementById(`player_${i}_captain`).checked = false;
       }
     }
 
-    // Fetch live data from Google Sheet using JSONP script injection
     const sportSelect = document.getElementById("sportSelect");
-    const sheetBanner = document.getElementById("sheetLinkBanner");
-    const sheetStatusText = document.getElementById("sheetStatusText");
-    const openSheetBtn = document.getElementById("openSheetBtn");
-    const loadingStatus = document.getElementById("loadingStatus");
 
-    sportSelect.addEventListener("change", () => {
+    function triggerDataFetch() {
       const sport = sportSelect.value;
       clearUIInputs();
-      updateSheetBanner();
+      if (!sport || !authenticatedBatch) return;
 
-      if (!sport) return;
+      loadingOverlay.classList.remove("hidden");
 
-      loadingStatus.innerText = "Fetching from Spreadsheet...";
-      
-      const callbackName = "jsonp_callback_" + Math.round(100000 * Math.random());
+      const callbackName = "jsonp_sync_" + Math.round(100000 * Math.random());
       window[callbackName] = function(data) {
         delete window[callbackName];
-        if (script.parentNode) {
-          document.body.removeChild(script);
-        }
-        
+        if (script.parentNode) document.body.removeChild(script);
+
+        loadingOverlay.classList.add("hidden");
+
         if (data.players && data.players.length > 0) {
-          data.players.forEach((p, index) => {
-            if (index < 20) {
-              document.getElementById(`player_${index + 1}_name`).value = p.name || "";
-              document.getElementById(`player_${index + 1}_enum`).value = p.enum || "";
+          data.players.forEach((p) => {
+            const idx = p.rank;
+            if (idx <= 20) {
+              const nameInput = document.getElementById(`player_${idx}_name`);
+              const enumInput = document.getElementById(`player_${idx}_enum`);
+              const roleEl = document.getElementById(`player_${idx}_role`);
+              const captainEl = document.getElementById(`player_${idx}_captain`);
+
+              if (nameInput) nameInput.value = p.name || "";
+              if (enumInput) enumInput.value = p.enum || "";
+              if (roleEl) roleEl.value = p.role || "General";
+              if (captainEl && p.isCaptain) captainEl.checked = true;
             }
           });
-          loadingStatus.innerText = "Loaded from Spreadsheet ✓";
-        } else {
-          loadingStatus.innerText = "New Roster";
         }
       };
 
       const script = document.createElement("script");
-      script.src = `${GOOGLE_APPS_SCRIPT_URL}?sport=${encodeURIComponent(sport)}&callback=${callbackName}`;
-      script.onerror = function() {
-        loadingStatus.innerText = "Offline Mode";
+      script.src = `${GOOGLE_APPS_SCRIPT_URL}?sport=${encodeURIComponent(sport)}&batch=${encodeURIComponent(authenticatedBatch)}&callback=${callbackName}`;
+
+      script.onerror = () => {
+        loadingOverlay.classList.add("hidden");
+        console.warn("Data retrieval network timeout.");
       };
+
       document.body.appendChild(script);
-    });
-
-    function updateSheetBanner() {
-      if (!authenticatedBatch) return;
-      const sport = sportSelect.value;
-      if (!sport) {
-        sheetBanner.classList.add("hidden");
-        return;
-      }
-      sheetBanner.classList.remove("hidden");
-      const url = BATCH_SPREADSHEET_URLS[authenticatedBatch];
-
-      if (url && url.trim() !== "") {
-        sheetBanner.className = "p-4 rounded-xl border border-amber-500/40 bg-amber-950/20";
-        sheetStatusText.innerText = `${authenticatedBatch} Master Spreadsheet Linked`;
-        openSheetBtn.href = url;
-        openSheetBtn.classList.remove("hidden");
-      } else {
-        sheetBanner.className = "p-4 rounded-xl border border-stone-800 bg-stone-950/40";
-        sheetStatusText.innerText = `No Spreadsheet linked for ${authenticatedBatch} yet`;
-        openSheetBtn.classList.add("hidden");
-      }
     }
 
-    function gatherPlayersList() {
+    sportSelect.addEventListener("change", () => {
+      const sport = sportSelect.value;
+      const roleCols = document.querySelectorAll(".role-col");
+
+      if (sport === "Cricket") {
+        roleHeaderCol.classList.remove("hidden");
+        roleCols.forEach(el => el.classList.remove("hidden"));
+      } else {
+        roleHeaderCol.classList.add("hidden");
+        roleCols.forEach(el => el.classList.add("hidden"));
+      }
+
+      triggerDataFetch();
+    });
+
+    function gatherPayloadPlayers() {
       const playersList = [];
       for (let i = 1; i <= 20; i++) {
         const nameVal = document.getElementById(`player_${i}_name`).value.trim();
         const enumVal = document.getElementById(`player_${i}_enum`).value.trim();
+        const roleEl = document.getElementById(`player_${i}_role`);
+        const roleVal = roleEl ? roleEl.value : "General";
+        const isCap = document.getElementById(`player_${i}_captain`).checked;
+
         if (nameVal || enumVal) {
-          playersList.push({ name: nameVal, enum: enumVal });
+          playersList.push({
+            rank: i,
+            name: nameVal,
+            enum: enumVal,
+            role: roleVal,
+            isCaptain: isCap
+          });
         }
       }
       return playersList;
     }
 
     /******************************************************************
-     * 4. BUTTON 1: SYNC TO SPREADSHEET
+     * 4. SYNC TO GOOGLE SHEET
      ******************************************************************/
     document.getElementById("syncBtn").addEventListener("click", async () => {
       const eventName = sportSelect.value;
@@ -496,40 +600,51 @@
         return;
       }
 
-      const playersList = gatherPlayersList();
-      loadingStatus.innerText = "Syncing...";
+      const playersList = gatherPayloadPlayers();
+      if (playersList.length === 0) {
+        alert("Please enter at least one player before syncing.");
+        return;
+      }
+
+      loadingOverlay.classList.remove("hidden");
 
       try {
-        if (GOOGLE_APPS_SCRIPT_URL) {
-          await fetch(GOOGLE_APPS_SCRIPT_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              batch: authenticatedBatch,
-              sport: eventName,
-              players: playersList
-            })
-          });
-        }
-        loadingStatus.innerText = "Synced successfully ✓";
-        alert(`Successfully synced current roster to the "${eventName}" tab!`);
+        await fetch(GOOGLE_APPS_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            batch: authenticatedBatch,
+            sport: eventName,
+            players: playersList
+          })
+        });
+        loadingOverlay.classList.add("hidden");
+        alert(`Successfully synced current roster for batch ${authenticatedBatch} (${eventName})!`);
       } catch (err) {
+        loadingOverlay.classList.add("hidden");
         console.error(err);
         alert("Sync Error: " + err.message);
-        loadingStatus.innerText = "Sync failed";
       }
     });
 
     /******************************************************************
-     * 5. BUTTON 2: FINALIZE & DOWNLOAD UPLOADED TEMPLATE FILE (.docx)
+     * 5. FINALIZE TEAM & DOWNLOAD .DOCX TEAM CARD
      ******************************************************************/
-    document.getElementById("downloadDocxBtn").addEventListener("click", async () => {
+    document.getElementById("finalizeBtn").addEventListener("click", async () => {
       const eventName = sportSelect.value;
       if (!eventName) {
         alert("Please select a sport/event first.");
         return;
       }
+
+      const activePlayers = gatherPayloadPlayers();
+      if (activePlayers.length === 0) {
+        alert("Please add at least one player to finalize the team card.");
+        return;
+      }
+
+      loadingOverlay.classList.remove("hidden");
 
       const today = new Date().toLocaleDateString("en-GB");
       const payload = {
@@ -544,35 +659,12 @@
       }
 
       try {
-        loadingStatus.innerText = "Syncing & Generating Template...";
-        
-        // Auto-sync data to spreadsheet first
-        if (GOOGLE_APPS_SCRIPT_URL) {
-          await fetch(GOOGLE_APPS_SCRIPT_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              batch: authenticatedBatch,
-              sport: eventName,
-              players: gatherPlayersList()
-            })
-          });
-        }
-
-        // Fetch and populate your uploaded team_cards.docx template
         const response = await fetch("team_cards.docx");
-        if (!response.ok) {
-          throw new Error("Could not find 'team_cards.docx' in project directory.");
-        }
+        if (!response.ok) throw new Error("Could not find 'team_cards.docx' in project directory.");
         const arrayBuffer = await response.arrayBuffer();
 
         const zip = new PizZip(arrayBuffer);
-        const doc = new window.docxtemplater(zip, {
-          paragraphLoop: true,
-          linebreaks: true,
-        });
-
+        const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
         doc.render(payload);
 
         const filledBlob = doc.getZip().generate({
@@ -581,17 +673,31 @@
         });
 
         saveAs(filledBlob, `${authenticatedBatch}_${eventName}_TeamCard.docx`);
-        loadingStatus.innerText = "Downloaded ✓";
-        alert("Success! Spreadsheet synced and official template downloaded.");
-
       } catch (err) {
         console.error(err);
-        alert("Generation Error: " + err.message);
-        loadingStatus.innerText = "Error";
+        alert("Document Generation Error: " + err.message);
       }
+
+      // Sync data to sheet in background
+      try {
+        await fetch(GOOGLE_APPS_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            batch: authenticatedBatch,
+            sport: eventName,
+            players: activePlayers
+          })
+        });
+      } catch(e) { console.warn("Background sync error", e); }
+
+      loadingOverlay.classList.add("hidden");
     });
 
-    // 6. Fire Ember Canvas Loop
+    /******************************************************************
+     * 6. REALISTIC EMBERS CANVAS PARTICLE ENGINE
+     ******************************************************************/
     const canvas = document.getElementById("emberCanvas");
     const ctx = canvas.getContext("2d");
 
@@ -603,14 +709,14 @@
       height = canvas.height = window.innerHeight;
     });
 
-    const particles = Array.from({ length: 48 }, () => ({
+    const particles = Array.from({ length: 55 }, () => ({
       x: Math.random() * width,
       y: Math.random() * height + height,
-      size: Math.random() * 2.2 + 0.6,
-      speedY: Math.random() * 0.85 + 0.35,
-      speedX: (Math.random() - 0.5) * 0.35,
-      opacity: Math.random() * 0.7 + 0.3,
-      color: Math.random() > 0.4 ? "230, 80, 20" : "212, 175, 55"
+      size: Math.random() * 2.5 + 0.8,
+      speedY: Math.random() * 0.9 + 0.4,
+      speedX: (Math.random() - 0.5) * 0.4,
+      opacity: Math.random() * 0.75 + 0.25,
+      color: Math.random() > 0.3 ? "245, 130, 32" : (Math.random() > 0.5 ? "220, 38, 38" : "234, 179, 8")
     }));
 
     function animateEmbers() {
@@ -618,7 +724,7 @@
 
       particles.forEach((p) => {
         p.y -= p.speedY;
-        p.x += p.speedX;
+        p.x += p.speedX + Math.sin(p.y * 0.01) * 0.2;
 
         if (p.y < -10) {
           p.y = height + 10;
@@ -628,8 +734,8 @@
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${p.color}, ${p.opacity})`;
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = `rgba(${p.color}, 0.8)`;
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = `rgba(${p.color}, 0.9)`;
         ctx.fill();
       });
 

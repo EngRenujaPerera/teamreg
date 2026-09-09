@@ -326,33 +326,15 @@
           </div>
         </div>
 
-        <!-- Action Buttons & Cloud Resources Directory Box -->
-        <div class="space-y-6 pt-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <button type="button" id="syncBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-slate-200 font-cinzel font-bold tracking-[0.2em] text-xs uppercase py-4 px-4 rounded-xl border border-slate-600/40 shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer">
-              <span>Sync Sheet</span>
-            </button>
+        <!-- Action Buttons -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+          <button type="button" id="syncBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-slate-200 font-cinzel font-bold tracking-[0.2em] text-xs uppercase py-4 px-4 rounded-xl border border-slate-600/40 shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer">
+            <span>Sync Sheet</span>
+          </button>
 
-            <button type="button" id="finalizeBtn" class="w-full bg-gradient-to-r from-slate-900 via-slate-800 to-zinc-900 hover:from-slate-800 hover:to-zinc-800 text-slate-100 font-cinzel font-bold tracking-[0.2em] text-xs uppercase py-4 px-4 rounded-xl border border-slate-400/50 shadow-[0_0_20px_rgba(148,163,184,0.25)] transition-all flex items-center justify-center space-x-2 cursor-pointer">
-              <span>Finalize Team & Download Card</span>
-            </button>
-          </div>
-
-          <!-- Google Drive Folder Callout Box -->
-          <div class="bg-slate-900/60 border border-cyan-500/30 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <h3 class="font-medium text-cyan-300 font-cinzel text-sm mb-1">Google Drive Resource Directory</h3>
-              <p class="text-xs text-slate-400">Access all templates, large Word files (102 MB+), and media assets in one secure place.</p>
-            </div>
-            <a href="https://drive.google.com/drive/folders/17FWpO7VLoL521WiU8tBxcoY3wRyBHYt2?usp=sharing" 
-               target="_blank" 
-               class="inline-flex items-center justify-center bg-cyan-600 hover:bg-cyan-500 text-white font-medium text-xs px-5 py-2.5 rounded-xl transition-colors shadow-sm whitespace-nowrap font-cinzel tracking-wider">
-              View Drive Folder
-              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-              </svg>
-            </a>
-          </div>
+          <button type="button" id="finalizeBtn" class="w-full bg-gradient-to-r from-slate-900 via-slate-800 to-zinc-900 hover:from-slate-800 hover:to-zinc-800 text-slate-100 font-cinzel font-bold tracking-[0.2em] text-xs uppercase py-4 px-4 rounded-xl border border-slate-400/50 shadow-[0_0_20px_rgba(148,163,184,0.25)] transition-all flex items-center justify-center space-x-2 cursor-pointer">
+            <span>Finalize Team & Download Card</span>
+          </button>
         </div>
 
       </div>
@@ -534,36 +516,6 @@
     };
 
     const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxkFJsbdHQFZDAiFYWXyCIUvGbmbt0PxGqSGjm_FCEFvjSIC11CUEFyrhlcK30pzJ9fBg/exec";
-
-    // Mapped Google Drive File IDs populated from your folder list
-    const DRIVE_FILE_IDS = {
-      "cricket": "1qYwnj7liSgdmJziKLISk-wk5OHotgByh",
-      "football": "1SIFFhhDyb79ZLroudPAMXEvvzacAZJdd",
-      "basketball": "1JHp3-BDCdjTA5FXV5HGX9ffOYN4Tf6qP",
-      "volleyball": "1txnDLhxaT0Qu368Rwed-vl5uX_NcdtM4",
-      "netball": "1Hy3Kdz0mFoEPHN70I_5CFRuouMJTy-le",
-      "elle": "1NVaUHT_YuJtFzVCZUQVRFcgFfFLLH-n",
-      "debate": "1GjRytNvyfGPw6Jk9vlb5NxBmYENYhZ3X",
-      "badminton": "1xOJ1nRME72q9ZZDw6jBrgQ2CRrPkWhs",
-      "table_tennis": "1zi44em73WNGK0szv37cfyr9H1KCMifGR",
-      "carrom": "1IEOe8MzX7gxf3_8ErfreJRbpOVO1iYO",
-      "marathon": "1A8UHdX0XZJil1BrqBSO0xfQKsw_9GhG",
-      "chess": "190_T7P1of51PnkQ8v8ZdYwiHUO82ysB2",
-      "espeaker": "1ZShYGCH4v3phi-4fYjkWcZsNjlikOvam",
-      "100m": "1gfu6Smda4R2wjj_Feep9hxSFu_kxnUJw",
-      "200m": "1RG6mgD37Fy8lxtQeMkElocEfmn_hYX6W",
-      "400m": "1M8xXake3YcbOg6SeJJjcyNhX4D2jF9x",
-      "800m": "1acz4jC4OLkuW3RS7G-GAZJkpMEwV3YM_",
-      "1500m": "1aRQ9da2XuhTia1uZNRvBovd3RfCWQvNL",
-      "4x100": "1Dk3fgSC11gu3oiOKI1CJVLpNdlnDw8sE",
-      "4x400": "1duoOKLiLgv2ZHxy6KzulOPXLANgIS57Z",
-      "100m_hurdles": "1Sd6eF3u9Za_cfwM2GMDJJ1N6hk_e77Xd",
-      "shotput": "1mLqvFDvtVt_JcVnYWRDZcPhjl2syAalF",
-      "longjump": "1MmwUEIM_U2VPPSZHg8bWOYUMwTaZOLGV",
-      "discuss_throw": "1NsuUeBS0S4IUlvoogUi-Gd8U6lalFIWO",
-      "high_jump": "1aHb16GZsylc6TzG8Lw2lzDI5sHDd00xB",
-      "javelin_throw": "1fEI5L0_vnBPu7d64xWMa9FMH3f8CUPs"
-    };
 
     const playersContainer = document.getElementById("playersContainer");
     const tableHeader = document.getElementById("tableHeader");
@@ -764,19 +716,13 @@
     });
 
     /******************************************************************
-     * 5. FINALIZE TEAM & DOWNLOAD .DOCX TEAM CARD (FROM DRIVE)
+     * 5. FINALIZE TEAM & DOWNLOAD .DOCX TEAM CARD (FROM LOCAL REPO)
      ******************************************************************/
     document.getElementById("finalizeBtn").addEventListener("click", async () => {
       const eventName = sportSelect.value;
       const category = categorySelect.value;
       if (!eventName) {
         alert("Please select a sport/event first.");
-        return;
-      }
-
-      const fileId = DRIVE_FILE_IDS[eventName];
-      if (!fileId) {
-        alert("Google Drive File ID for this event has not been mapped.");
         return;
       }
 
@@ -814,9 +760,8 @@
       }
 
       try {
-        const driveUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-        const response = await fetch(driveUrl);
-        if (!response.ok) throw new Error(`Could not download template from Google Drive for ${eventName}. Check sharing permissions.`);
+        const response = await fetch(`Team_Cards/${eventName}.docx`);
+        if (!response.ok) throw new Error(`Could not find 'Team_Cards/${eventName}.docx' in project directory.`);
         const arrayBuffer = await response.arrayBuffer();
 
         const zip = new PizZip(arrayBuffer);

@@ -243,7 +243,7 @@
     <main class="valyrian-shield rounded-3xl p-6 sm:p-12 relative">
       <div id="teamCardForm" class="space-y-8">
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-stone-950/70 p-6 rounded-2xl border border-slate-800/80 shadow-inner">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 bg-stone-950/70 p-6 rounded-2xl border border-slate-800/80 shadow-inner">
           <div id="batchContainer">
             <label class="block text-[11px] uppercase tracking-widest text-slate-300 font-cinzel font-bold mb-2">
               Batch Realm <span id="batchRealmStatus" class="text-amber-400 lowercase text-[10px]">(locked)</span>
@@ -255,31 +255,58 @@
 
           <div>
             <label class="block text-[11px] uppercase tracking-widest text-slate-300 font-cinzel font-bold mb-2">
+              Category
+            </label>
+            <select id="categorySelect" class="w-full bg-[#0d0c11] border border-slate-800 text-slate-200 rounded-xl p-3 text-sm font-cinzel focus:outline-none focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition-all cursor-pointer">
+              <option value="MEN">MEN</option>
+              <option value="WOMEN">WOMEN</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-[11px] uppercase tracking-widest text-slate-300 font-cinzel font-bold mb-2">
               The Sport / Event
             </label>
             <select id="sportSelect" class="w-full bg-[#0d0c11] border border-slate-800 text-slate-200 rounded-xl p-3 text-sm font-cinzel focus:outline-none focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition-all cursor-pointer">
               <option value="">-- Choose Event --</option>
-              <option value="Cricket">Cricket</option>
-              <option value="Football">Football</option>
-              <option value="Badminton">Badminton</option>
-              <option value="Volleyball">Volleyball</option>
-              <option value="Netball">Netball</option>
-              <option value="Carrom">Carrom</option>
-              <option value="Chess">Chess</option>
-              <option value="Table Tennis">Table Tennis</option>
-              <option value="Elle">Elle</option>
-              <option value="Basket Ball">Basket Ball</option>
-              <option value="Athletics">Athletics</option>
+              <option value="cricket">Cricket</option>
+              <option value="football">Football</option>
+              <option value="basketball">Basketball</option>
+              <option value="volleyball">Volleyball</option>
+              <option value="netball">Netball</option>
+              <option value="elle">Elle</option>
+              <option value="debate">Debate</option>
+              <option value="badminton">Badminton</option>
+              <option value="table_tennis">Table Tennis</option>
+              <option value="carrom">Carrom</option>
+              <option value="marathon">Marathon</option>
+              <option value="chess">Chess</option>
+              <option value="espeaker">E Speaker</option>
+              <optgroup label="Athletics Events">
+                <option value="100m">100m</option>
+                <option value="200m">200m</option>
+                <option value="400m">400m</option>
+                <option value="800m">800m</option>
+                <option value="1500m">1500m</option>
+                <option value="4x100">4x100m Relay</option>
+                <option value="4x400">4x400m Relay</option>
+                <option value="100m_hurdles">100m Hurdles</option>
+                <option value="shotput">Shot Put</option>
+                <option value="longjump">Long Jump</option>
+                <option value="discuss_throw">Discuss Throw</option>
+                <option value="high_jump">High Jump</option>
+                <option value="javelin_throw">Javelin Throw</option>
+              </optgroup>
             </select>
           </div>
         </div>
 
-        <!-- 20 Player Roster Slots with Cricket Roles & Captain Designation -->
+        <!-- Dynamic Player Roster Slots -->
         <div class="space-y-3">
           <div class="flex flex-col sm:flex-row justify-between items-baseline gap-1">
             <h2 class="text-sm sm:text-base font-bold font-cinzel tracking-wider text-slate-200 flex items-center gap-2">
               <img src="logo.png" onerror="this.src='https://lh3.googleusercontent.com/a/ACg8ocKVCZ3dwhUxDnuDbv2TfiSLT54QDnjOOAb-ke-HPQSY0R6qt4o=s360-c-no';" class="w-5 h-5 rounded-full border border-slate-500/60 inline-block object-cover" alt="icon" />
-              <span>Squad Roster, Roles & Captain Designation (Up to 20 Players)</span>
+              <span id="rosterTitle">Squad Roster, Roles & Captain Designation</span>
             </h2>
           </div>
 
@@ -435,9 +462,9 @@
         }
 
         sportSelect.value = "";
-        clearUIInputs();
+        updatePlayerSlots(0);
       } else {
-        loginError.classList.add("hidden");
+        loginError.classList.remove("hidden");
       }
     });
 
@@ -446,7 +473,7 @@
       isAdmin = false;
       pauseAudio();
       document.getElementById("loginForm").reset();
-      clearUIInputs();
+      updatePlayerSlots(0);
       portalScreen.classList.add("hidden");
 
       portalBgContainer.classList.add("hidden");
@@ -457,62 +484,132 @@
     });
 
     /******************************************************************
-     * 3. APPS SCRIPT ENDPOINT & PERSISTENT LOADING WITH BUFFER
+     * 3. EVENT LIMITS & CONFIGURATION
      ******************************************************************/
+    const EVENT_LIMITS = {
+      "cricket": 20,
+      "football": 20,
+      "basketball": 10,
+      "volleyball": 10,
+      "netball": 12,
+      "elle": 20,
+      "debate": 5,
+      "badminton": 6,
+      "table_tennis": 10,
+      "carrom": 10,
+      "marathon": 20,
+      "chess": 10,
+      "espeaker": 5,
+      "100m": 5,
+      "200m": 5,
+      "400m": 5,
+      "800m": 5,
+      "1500m": 5,
+      "4x100": 5,
+      "4x400": 5,
+      "100m_hurdles": 5,
+      "shotput": 5,
+      "longjump": 5,
+      "discuss_throw": 5,
+      "high_jump": 5,
+      "javelin_throw": 5
+    };
+
     const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxkFJsbdHQFZDAiFYWXyCIUvGbmbt0PxGqSGjm_FCEFvjSIC11CUEFyrhlcK30pzJ9fBg/exec";
 
-    // Build 20 Player Rows dynamically
     const playersContainer = document.getElementById("playersContainer");
     const tableHeader = document.getElementById("tableHeader");
     const roleHeaderCol = document.getElementById("roleHeaderCol");
+    const rosterTitle = document.getElementById("rosterTitle");
+    const sportSelect = document.getElementById("sportSelect");
+    const categorySelect = document.getElementById("categorySelect");
 
-    for (let i = 1; i <= 20; i++) {
-      const row = document.createElement("div");
-      row.className = "player-row grid grid-cols-12 px-4 py-2.5 items-center hover:bg-stone-900/40 transition-colors gap-3";
-      row.dataset.index = i;
+    function updatePlayerSlots(limit) {
+      playersContainer.innerHTML = "";
+      if (limit <= 0) {
+        rosterTitle.innerText = "Squad Roster, Roles & Captain Designation";
+        return;
+      }
+      rosterTitle.innerText = `Squad Roster, Roles & Captain Designation (Up to ${limit} Players)`;
 
-      row.innerHTML = `
-        <div class="col-span-1 text-center font-cinzel font-bold text-slate-400 text-sm">${i}</div>
-        <div class="col-span-5 px-2">
-          <input type="text" id="player_${i}_name" placeholder="Full Name"
-            class="w-full bg-[#08070b]/90 border border-slate-800 focus:border-slate-400 rounded-xl px-3.5 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-slate-400 font-light" />
-        </div>
-        <div class="col-span-3 px-2">
-          <input type="text" id="player_${i}_enum" placeholder="Reg. No."
-            class="w-full bg-[#08070b]/90 border border-slate-800 focus:border-slate-400 rounded-xl px-3.5 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-slate-400 font-mono uppercase" />
-        </div>
-        <div class="role-col hidden col-span-3 px-2">
-          <select id="player_${i}_role" class="w-full bg-[#08070b]/90 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-2 text-xs font-cinzel focus:outline-none focus:border-slate-400">
-            <option value="General">Player</option>
-            <option value="Batsman">Batsman</option>
-            <option value="Bowler">Bowler</option>
-            <option value="All-Rounder">All-Rounder</option>
-            <option value="Wicket-Keeper">Wicket-Keeper (WK)</option>
-          </select>
-        </div>
-        <div class="col-span-3 px-2 text-center flex items-center justify-center space-x-2">
-          <input type="radio" name="teamCaptain" id="player_${i}_captain" value="${i}" class="accent-amber-500 cursor-pointer w-4 h-4" />
-          <label for="player_${i}_captain" class="text-[11px] font-cinzel text-amber-300 cursor-pointer">Captain</label>
-        </div>
-      `;
-      playersContainer.appendChild(row);
-    }
+      for (let i = 1; i <= limit; i++) {
+        const row = document.createElement("div");
+        row.className = "player-row grid grid-cols-12 px-4 py-2.5 items-center hover:bg-stone-900/40 transition-colors gap-3";
+        row.dataset.index = i;
 
-    function clearUIInputs() {
-      for (let i = 1; i <= 20; i++) {
-        document.getElementById(`player_${i}_name`).value = "";
-        document.getElementById(`player_${i}_enum`).value = "";
-        const roleSel = document.getElementById(`player_${i}_role`);
-        if (roleSel) roleSel.value = "General";
-        document.getElementById(`player_${i}_captain`).checked = false;
+        row.innerHTML = `
+          <div class="col-span-1 text-center font-cinzel font-bold text-slate-400 text-sm">${i}</div>
+          <div class="col-span-5 px-2">
+            <input type="text" id="player_${i}_name" placeholder="Full Name"
+              class="w-full bg-[#08070b]/90 border border-slate-800 focus:border-slate-400 rounded-xl px-3.5 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-slate-400 font-light" />
+          </div>
+          <div class="col-span-3 px-2">
+            <input type="text" id="player_${i}_enum" placeholder="Reg. No."
+              class="w-full bg-[#08070b]/90 border border-slate-800 focus:border-slate-400 rounded-xl px-3.5 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-slate-400 font-mono uppercase" />
+          </div>
+          <div class="role-col hidden col-span-3 px-2">
+            <select id="player_${i}_role" class="w-full bg-[#08070b]/90 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-2 text-xs font-cinzel focus:outline-none focus:border-slate-400">
+              <option value="General">Player</option>
+              <option value="Batsman">Batsman</option>
+              <option value="Bowler">Bowler</option>
+              <option value="All-Rounder">All-Rounder</option>
+              <option value="Wicket-Keeper">Wicket-Keeper (WK)</option>
+            </select>
+          </div>
+          <div class="col-span-3 px-2 text-center flex items-center justify-center space-x-2">
+            <input type="radio" name="teamCaptain" id="player_${i}_captain" value="${i}" class="accent-amber-500 cursor-pointer w-4 h-4" />
+            <label for="player_${i}_captain" class="text-[11px] font-cinzel text-amber-300 cursor-pointer">Captain</label>
+          </div>
+        `;
+        playersContainer.appendChild(row);
+      }
+
+      const sport = sportSelect.value;
+      const roleCols = document.querySelectorAll(".role-col");
+      if (sport === "cricket") {
+        roleHeaderCol.classList.remove("hidden");
+        roleCols.forEach(el => el.classList.remove("hidden"));
+      } else {
+        roleHeaderCol.classList.add("hidden");
+        roleCols.forEach(el => el.classList.add("hidden"));
       }
     }
 
-    const sportSelect = document.getElementById("sportSelect");
+    function clearUIInputs(limit) {
+      for (let i = 1; i <= limit; i++) {
+        const nEl = document.getElementById(`player_${i}_name`);
+        const eEl = document.getElementById(`player_${i}_enum`);
+        const rEl = document.getElementById(`player_${i}_role`);
+        const cEl = document.getElementById(`player_${i}_captain`);
+        if (nEl) nEl.value = "";
+        if (eEl) eEl.value = "";
+        if (rEl) rEl.value = "General";
+        if (cEl) cEl.checked = false;
+      }
+    }
 
     function triggerDataFetch() {
       const sport = sportSelect.value;
-      clearUIInputs();
+      const category = categorySelect.value;
+
+      // Enforce gender restrictions
+      if (sport === "basketball" && category !== "MEN") {
+        alert("Basketball is restricted to MEN only.");
+        sportSelect.value = "";
+        updatePlayerSlots(0);
+        return;
+      }
+      if (sport === "netball" && category !== "WOMEN") {
+        alert("Netball is restricted to WOMEN only.");
+        sportSelect.value = "";
+        updatePlayerSlots(0);
+        return;
+      }
+
+      const limit = EVENT_LIMITS[sport] || 0;
+      updatePlayerSlots(limit);
+      clearUIInputs(limit);
+
       if (!sport || !authenticatedBatch) return;
 
       loadingOverlay.classList.remove("hidden");
@@ -527,7 +624,7 @@
         if (data.players && data.players.length > 0) {
           data.players.forEach((p) => {
             const idx = p.rank;
-            if (idx <= 20) {
+            if (idx <= limit) {
               const nameInput = document.getElementById(`player_${idx}_name`);
               const enumInput = document.getElementById(`player_${idx}_enum`);
               const roleEl = document.getElementById(`player_${idx}_role`);
@@ -543,7 +640,7 @@
       };
 
       const script = document.createElement("script");
-      script.src = `${GOOGLE_APPS_SCRIPT_URL}?sport=${encodeURIComponent(sport)}&batch=${encodeURIComponent(authenticatedBatch)}&callback=${callbackName}`;
+      script.src = `${GOOGLE_APPS_SCRIPT_URL}?sport=${encodeURIComponent(sport)}&category=${encodeURIComponent(category)}&batch=${encodeURIComponent(authenticatedBatch)}&callback=${callbackName}`;
 
       script.onerror = () => {
         loadingOverlay.classList.add("hidden");
@@ -553,24 +650,12 @@
       document.body.appendChild(script);
     }
 
-    sportSelect.addEventListener("change", () => {
-      const sport = sportSelect.value;
-      const roleCols = document.querySelectorAll(".role-col");
+    sportSelect.addEventListener("change", triggerDataFetch);
+    categorySelect.addEventListener("change", triggerDataFetch);
 
-      if (sport === "Cricket") {
-        roleHeaderCol.classList.remove("hidden");
-        roleCols.forEach(el => el.classList.remove("hidden"));
-      } else {
-        roleHeaderCol.classList.add("hidden");
-        roleCols.forEach(el => el.classList.add("hidden"));
-      }
-
-      triggerDataFetch();
-    });
-
-    function gatherPayloadPlayers() {
+    function gatherPayloadPlayers(limit) {
       const playersList = [];
-      for (let i = 1; i <= 20; i++) {
+      for (let i = 1; i <= limit; i++) {
         const nameVal = document.getElementById(`player_${i}_name`).value.trim();
         const enumVal = document.getElementById(`player_${i}_enum`).value.trim();
         const roleEl = document.getElementById(`player_${i}_role`);
@@ -595,12 +680,14 @@
      ******************************************************************/
     document.getElementById("syncBtn").addEventListener("click", async () => {
       const eventName = sportSelect.value;
+      const category = categorySelect.value;
       if (!eventName) {
         alert("Please select a sport/event first.");
         return;
       }
 
-      const playersList = gatherPayloadPlayers();
+      const limit = EVENT_LIMITS[eventName] || 20;
+      const playersList = gatherPayloadPlayers(limit);
       if (playersList.length === 0) {
         alert("Please enter at least one player before syncing.");
         return;
@@ -615,12 +702,13 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             batch: authenticatedBatch,
+            category: category,
             sport: eventName,
             players: playersList
           })
         });
         loadingOverlay.classList.add("hidden");
-        alert(`Successfully synced current roster for batch ${authenticatedBatch} (${eventName})!`);
+        alert(`Successfully synced current roster for batch ${authenticatedBatch} (${category} - ${eventName})!`);
       } catch (err) {
         loadingOverlay.classList.add("hidden");
         console.error(err);
@@ -633,12 +721,14 @@
      ******************************************************************/
     document.getElementById("finalizeBtn").addEventListener("click", async () => {
       const eventName = sportSelect.value;
+      const category = categorySelect.value;
       if (!eventName) {
         alert("Please select a sport/event first.");
         return;
       }
 
-      const activePlayers = gatherPayloadPlayers();
+      const limit = EVENT_LIMITS[eventName] || 20;
+      const activePlayers = gatherPayloadPlayers(limit);
       if (activePlayers.length === 0) {
         alert("Please add at least one player to finalize the team card.");
         return;
@@ -647,20 +737,33 @@
       loadingOverlay.classList.remove("hidden");
 
       const today = new Date().toLocaleDateString("en-GB");
+
+      // Determine captain name
+      let captainName = "";
+      for (let i = 1; i <= limit; i++) {
+        const capRadio = document.getElementById(`player_${i}_captain`);
+        if (capRadio && capRadio.checked) {
+          captainName = document.getElementById(`player_${i}_name`).value.trim();
+          break;
+        }
+      }
+
       const payload = {
         batch: authenticatedBatch,
+        category: category,
         event: eventName,
+        captain: captainName,
         date_submitted: today
       };
 
-      for (let i = 1; i <= 20; i++) {
+      for (let i = 1; i <= limit; i++) {
         payload[`player_${i}_name`] = document.getElementById(`player_${i}_name`).value.trim();
         payload[`player_${i}_enum`] = document.getElementById(`player_${i}_enum`).value.trim();
       }
 
       try {
-        const response = await fetch("team_cards.docx");
-        if (!response.ok) throw new Error("Could not find 'team_cards.docx' in project directory.");
+        const response = await fetch(`Team_Cards/${eventName}.docx`);
+        if (!response.ok) throw new Error(`Could not find 'Team_Cards/${eventName}.docx' in project directory.`);
         const arrayBuffer = await response.arrayBuffer();
 
         const zip = new PizZip(arrayBuffer);
@@ -672,7 +775,7 @@
           mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         });
 
-        saveAs(filledBlob, `${authenticatedBatch}_${eventName}_TeamCard.docx`);
+        saveAs(filledBlob, `${authenticatedBatch}_${category}_${eventName}_TeamCard.docx`);
       } catch (err) {
         console.error(err);
         alert("Document Generation Error: " + err.message);
@@ -686,6 +789,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             batch: authenticatedBatch,
+            category: category,
             sport: eventName,
             players: activePlayers
           })

@@ -535,6 +535,36 @@
 
     const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxkFJsbdHQFZDAiFYWXyCIUvGbmbt0PxGqSGjm_FCEFvjSIC11CUEFyrhlcK30pzJ9fBg/exec";
 
+    // Mapped Google Drive File IDs populated from your folder list
+    const DRIVE_FILE_IDS = {
+      "cricket": "1qYwnj7liSgdmJziKLISk-wk5OHotgByh",
+      "football": "1SIFFhhDyb79ZLroudPAMXEvvzacAZJdd",
+      "basketball": "1JHp3-BDCdjTA5FXV5HGX9ffOYN4Tf6qP",
+      "volleyball": "1txnDLhxaT0Qu368Rwed-vl5uX_NcdtM4",
+      "netball": "1Hy3Kdz0mFoEPHN70I_5CFRuouMJTy-le",
+      "elle": "1NVaUHT_YuJtFzVCZUQVRFcgFfFLLH-n",
+      "debate": "1GjRytNvyfGPw6Jk9vlb5NxBmYENYhZ3X",
+      "badminton": "1xOJ1nRME72q9ZZDw6jBrgQ2CRrPkWhs",
+      "table_tennis": "1zi44em73WNGK0szv37cfyr9H1KCMifGR",
+      "carrom": "1IEOe8MzX7gxf3_8ErfreJRbpOVO1iYO",
+      "marathon": "1A8UHdX0XZJil1BrqBSO0xfQKsw_9GhG",
+      "chess": "190_T7P1of51PnkQ8v8ZdYwiHUO82ysB2",
+      "espeaker": "1ZShYGCH4v3phi-4fYjkWcZsNjlikOvam",
+      "100m": "1gfu6Smda4R2wjj_Feep9hxSFu_kxnUJw",
+      "200m": "1RG6mgD37Fy8lxtQeMkElocEfmn_hYX6W",
+      "400m": "1M8xXake3YcbOg6SeJJjcyNhX4D2jF9x",
+      "800m": "1acz4jC4OLkuW3RS7G-GAZJkpMEwV3YM_",
+      "1500m": "1aRQ9da2XuhTia1uZNRvBovd3RfCWQvNL",
+      "4x100": "1Dk3fgSC11gu3oiOKI1CJVLpNdlnDw8sE",
+      "4x400": "1duoOKLiLgv2ZHxy6KzulOPXLANgIS57Z",
+      "100m_hurdles": "1Sd6eF3u9Za_cfwM2GMDJJ1N6hk_e77Xd",
+      "shotput": "1mLqvFDvtVt_JcVnYWRDZcPhjl2syAalF",
+      "longjump": "1MmwUEIM_U2VPPSZHg8bWOYUMwTaZOLGV",
+      "discuss_throw": "1NsuUeBS0S4IUlvoogUi-Gd8U6lalFIWO",
+      "high_jump": "1aHb16GZsylc6TzG8Lw2lzDI5sHDd00xB",
+      "javelin_throw": "1fEI5L0_vnBPu7d64xWMa9FMH3f8CUPs"
+    };
+
     const playersContainer = document.getElementById("playersContainer");
     const tableHeader = document.getElementById("tableHeader");
     const roleHeaderCol = document.getElementById("roleHeaderCol");
@@ -610,7 +640,6 @@
       const sport = sportSelect.value;
       const category = categorySelect.value;
 
-      // Enforce gender restrictions
       if (sport === "basketball" && category !== "MEN") {
         alert("Basketball is restricted to MEN only.");
         sportSelect.value = "";
@@ -735,13 +764,19 @@
     });
 
     /******************************************************************
-     * 5. FINALIZE TEAM & DOWNLOAD .DOCX TEAM CARD
+     * 5. FINALIZE TEAM & DOWNLOAD .DOCX TEAM CARD (FROM DRIVE)
      ******************************************************************/
     document.getElementById("finalizeBtn").addEventListener("click", async () => {
       const eventName = sportSelect.value;
       const category = categorySelect.value;
       if (!eventName) {
         alert("Please select a sport/event first.");
+        return;
+      }
+
+      const fileId = DRIVE_FILE_IDS[eventName];
+      if (!fileId) {
+        alert("Google Drive File ID for this event has not been mapped.");
         return;
       }
 
@@ -752,11 +787,10 @@
         return;
       }
 
-      loadingOverlay.classList.add("hidden");
+      loadingOverlay.classList.remove("hidden");
 
       const today = new Date().toLocaleDateString("en-GB");
 
-      // Determine captain name
       let captainName = "";
       for (let i = 1; i <= limit; i++) {
         const capRadio = document.getElementById(`player_${i}_captain`);
@@ -780,8 +814,9 @@
       }
 
       try {
-        const response = await fetch(`Team_Cards/${eventName}.docx`);
-        if (!response.ok) throw new Error(`Could not find 'Team_Cards/${eventName}.docx' in project directory.`);
+        const driveUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+        const response = await fetch(driveUrl);
+        if (!response.ok) throw new Error(`Could not download template from Google Drive for ${eventName}. Check sharing permissions.`);
         const arrayBuffer = await response.arrayBuffer();
 
         const zip = new PizZip(arrayBuffer);

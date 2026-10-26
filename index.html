@@ -471,7 +471,7 @@
           </button>
 
           <button type="button" id="finalizeBtn" disabled class="w-full bg-gradient-to-r from-slate-900 via-slate-800 to-zinc-900 hover:from-slate-800 hover:to-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed text-slate-100 font-cinzel font-bold tracking-[0.2em] text-xs uppercase py-4 px-4 rounded-xl border border-slate-400/50 shadow-[0_0_20px_rgba(148,163,184,0.25)] transition-all flex items-center justify-center space-x-2 cursor-pointer">
-            <span>Finalize & Download Team Card</span>
+            <span>Finalize & Download Word Card (.docx)</span>
           </button>
         </div>
 
@@ -1213,7 +1213,7 @@
     });
 
     /******************************************************************
-     * 7. FINALIZE TEAM & CONVERT TEMPLATE TO PDF VIA CONVERTAPI
+     * 7. FINALIZE TEAM & DIRECTLY DOWNLOAD WORD CARD (.docx)
      ******************************************************************/
     document.getElementById("finalizeBtn").addEventListener("click", async () => {
       if (!rulesCheckbox.checked) {
@@ -1277,38 +1277,12 @@
           mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         });
 
-        // 3. Send populated .docx blob to ConvertAPI to convert directly to PDF
-        const formData = new FormData();
-        formData.append("File", filledBlob, `${authenticatedBatch}_${category}_${eventName}.docx`);
-        formData.append("StoreFile", "true");
-
-        const convertResponse = await fetch("https://v2.convertapi.com/convert/docx/to/pdf", {
-          method: "POST",
-          headers: {
-            "Authorization": "Bearer I36Bfekzgdq8UfIoHy2BLMbdQ0CkzPTK"
-          },
-          body: formData
-        });
-
-        if (!convertResponse.ok) {
-          throw new Error("Failed to convert document to PDF via ConvertAPI.");
-        }
-
-        const resultJson = await convertResponse.json();
-        if (resultJson && resultJson.Files && resultJson.Files[0].Url) {
-          const pdfUrl = resultJson.Files[0].Url;
-
-          // Download converted PDF file
-          const pdfBlobRes = await fetch(pdfUrl);
-          const pdfBlob = await pdfBlobRes.blob();
-          saveAs(pdfBlob, `${authenticatedBatch}_${category}_${eventName}_TeamCard.pdf`);
-        } else {
-          throw new Error("Invalid response received from conversion service.");
-        }
+        // 3. Directly download the rendered Word (.docx) file
+        saveAs(filledBlob, `${authenticatedBatch}_${category}_${eventName}_TeamCard.docx`);
 
       } catch (err) {
         console.error(err);
-        alert("Template Conversion Error: " + err.message);
+        alert("Template Generation Error: " + err.message);
       }
 
       // Sync data to sheet in background

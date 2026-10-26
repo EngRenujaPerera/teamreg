@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>E-Week 2026 | Team Registration & Team Card</title>
+  <title>E-Week 2026 | Team Registration, Rules & Team Card</title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -162,6 +162,74 @@
     </div>
   </div>
 
+  <!-- ================= INSTRUCTION MANUAL PDF MODAL ================= -->
+  <div id="pdfModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-6">
+    <div class="valyrian-shield max-w-4xl w-full h-[85vh] rounded-2xl flex flex-col overflow-hidden border border-slate-600/50 shadow-2xl">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-stone-950/80">
+        <div class="flex items-center space-x-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+          <h3 class="text-xs sm:text-sm font-cinzel font-bold text-amber-300 tracking-[0.2em] uppercase">Instruction Manual - Citadel Scroll</h3>
+        </div>
+        <button id="closePdfModal" class="bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/60 rounded-full px-3 py-1 text-[11px] font-cinzel tracking-wider uppercase transition-all cursor-pointer">
+          Close Scroll
+        </button>
+      </div>
+      <div class="flex-1 bg-black/50 p-2">
+        <iframe src="Instruction Manuel.pdf" class="w-full h-full rounded-xl border border-slate-800" title="Instruction Manual"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= RULES & REGULATIONS MODAL ================= -->
+  <div id="rulesModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
+    <div class="valyrian-shield max-w-4xl w-full max-h-[90vh] rounded-2xl flex flex-col overflow-hidden border border-amber-600/40 shadow-2xl">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-stone-950/90">
+        <div class="flex items-center space-x-3">
+          <span class="w-3 h-3 rounded-full bg-amber-500 animate-pulse"></span>
+          <div>
+            <h3 class="text-xs sm:text-sm font-cinzel font-bold text-amber-300 tracking-[0.2em] uppercase">E-Week Sports Rules & Regulations</h3>
+            <p class="text-[10px] text-slate-400 font-cinzel tracking-wider">Faculty of Engineering • University of Jaffna</p>
+          </div>
+        </div>
+        <button id="closeRulesModal" class="bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/60 rounded-full px-3.5 py-1 text-[11px] font-cinzel tracking-wider uppercase transition-all cursor-pointer">
+          Dismiss
+        </button>
+      </div>
+
+      <!-- Quick Selector inside Rules Modal -->
+      <div class="bg-stone-950/70 border-b border-slate-800/80 px-6 py-3 flex flex-wrap gap-2 items-center justify-between">
+        <span class="text-[11px] font-cinzel text-slate-400 uppercase tracking-widest font-semibold">View Sport Rules:</span>
+        <select id="modalSportSwitch" class="bg-[#0d0c11] border border-slate-700 text-amber-300 rounded-lg px-3 py-1.5 text-xs font-cinzel focus:outline-none focus:border-amber-400">
+          <option value="all">General Sports Rules</option>
+          <option value="cricket">Cricket</option>
+          <option value="football">Football</option>
+          <option value="basketball">Basketball</option>
+          <option value="volleyball">Volleyball</option>
+          <option value="badminton">Badminton</option>
+          <option value="table_tennis">Table Tennis</option>
+          <option value="elle">Elle</option>
+          <option value="marathon">Marathon</option>
+          <option value="chess">Chess</option>
+          <option value="carrom">Carrom</option>
+          <option value="athletics">All Athletics Events</option>
+        </select>
+      </div>
+
+      <!-- Rules Content Scroll Area -->
+      <div id="rulesModalContent" class="flex-1 overflow-y-auto p-6 space-y-6 text-sm text-slate-300 leading-relaxed font-light">
+        <!-- Injected via JavaScript dynamically -->
+      </div>
+
+      <!-- Rules Acceptance Action Footer -->
+      <div class="px-6 py-3 bg-stone-950/95 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <p class="text-[11px] text-slate-400 font-cinzel">Confirm that you have read the tournament rules to unlock the roster.</p>
+        <button type="button" id="acceptRulesModalBtn" class="bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 hover:from-amber-500 hover:to-amber-700 text-amber-100 font-cinzel font-bold text-xs uppercase px-5 py-2 rounded-xl shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all cursor-pointer">
+          Acknowledge & Unlock Roster
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= 1. LOGIN SCREEN ================= -->
   <div id="loginScreen" class="relative z-30 min-h-screen flex items-center justify-center px-4 py-8">
     <div class="valyrian-shield max-w-md w-full p-6 sm:p-8 rounded-2xl relative">
@@ -191,6 +259,15 @@
         <button type="submit" class="w-full bg-gradient-to-r from-slate-900 via-slate-800 to-zinc-900 hover:from-slate-800 hover:to-zinc-800 text-slate-100 font-cinzel font-bold tracking-[0.2em] text-xs uppercase py-3 px-6 rounded-xl border border-slate-500/50 shadow-[0_0_20px_rgba(148,163,184,0.2)] transition-all">
           Authorize Access
         </button>
+
+        <div class="flex items-center justify-around pt-2">
+          <button type="button" id="openLoginRulesBtn" class="text-[11px] font-cinzel text-amber-400 hover:text-amber-300 underline tracking-wider uppercase cursor-pointer">
+            Tournament Rules
+          </button>
+          <button type="button" id="openLoginPdfBtn" class="text-[11px] font-cinzel text-slate-400 hover:text-slate-200 underline tracking-wider uppercase cursor-pointer">
+            Citadel Manual (PDF)
+          </button>
+        </div>
       </form>
     </div>
   </div>
@@ -209,14 +286,24 @@
         </span>
       </div>
 
-      <div class="flex items-center space-x-4">
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- Tournament Rules Trigger -->
+        <button id="openPortalRulesBtn" type="button" class="bg-amber-950/40 hover:bg-amber-900/60 text-amber-300 border border-amber-700/60 rounded-full px-3.5 py-1.5 text-[11px] font-cinzel tracking-wider flex items-center space-x-1.5 transition-all cursor-pointer">
+          <span>📜 Rules & Regulations</span>
+        </button>
+
+        <!-- Instruction Manual Trigger -->
+        <button id="openPortalPdfBtn" type="button" class="bg-black/60 hover:bg-black text-slate-300 border border-slate-700/60 rounded-full px-3.5 py-1.5 text-[11px] font-cinzel tracking-wider flex items-center space-x-1.5 transition-all cursor-pointer">
+          <span>Manual</span>
+        </button>
+
         <!-- Audio Control Toggle -->
         <button id="audioToggleBtn" type="button" class="bg-black/60 hover:bg-black text-slate-300 border border-slate-600/60 rounded-full px-3.5 py-1.5 text-[11px] font-cinzel tracking-wider flex items-center space-x-2 transition-all cursor-pointer">
           <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse" id="audioIndicatorDot"></span>
           <span id="audioStatusText">Soundtrack: On</span>
         </button>
 
-        <!-- Bend the Knee / Sign Out Button -->
+        <!-- Sign Out Button -->
         <button id="logoutBtn" class="bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/60 rounded-full px-4 py-1.5 text-[11px] font-cinzel font-bold tracking-widest uppercase transition-all shadow-md cursor-pointer">
           Sign Out
         </button>
@@ -264,9 +351,14 @@
           </div>
 
           <div>
-            <label class="block text-[11px] uppercase tracking-widest text-slate-300 font-cinzel font-bold mb-2">
-              The Sport / Event
-            </label>
+            <div class="flex items-center justify-between mb-2">
+              <label class="block text-[11px] uppercase tracking-widest text-slate-300 font-cinzel font-bold">
+                The Sport / Event
+              </label>
+              <button type="button" id="sportRulesQuickBtn" class="text-[10px] font-cinzel text-amber-400 hover:text-amber-300 underline tracking-wider uppercase cursor-pointer">
+                View Rules ↗
+              </button>
+            </div>
             <select id="sportSelect" class="w-full bg-[#0d0c11] border border-slate-800 text-slate-200 rounded-xl p-3 text-sm font-cinzel focus:outline-none focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition-all cursor-pointer">
               <option value="">-- Choose Event --</option>
               <option value="cricket">Cricket</option>
@@ -282,7 +374,7 @@
               <option value="marathon">Marathon</option>
               <option value="chess">Chess</option>
               <option value="espeaker">E Speaker</option>
-              <optgroup label="Athletics Events">
+              <optgroup label="Athletics Events (Identical Track & Field Rules)">
                 <option value="100m">100m</option>
                 <option value="200m">200m</option>
                 <option value="400m">400m</option>
@@ -301,16 +393,62 @@
           </div>
         </div>
 
+        <!-- Sport Specific Rules Banner preview container -->
+        <div id="activeRulesNotice" class="hidden bg-stone-950/90 border border-amber-600/30 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
+          <div class="space-y-0.5">
+            <h4 id="activeRulesSportName" class="text-xs font-cinzel font-bold text-amber-300 uppercase tracking-widest">Sport Rules</h4>
+            <p id="activeRulesSummary" class="text-xs text-slate-300 font-light"></p>
+          </div>
+          <button type="button" id="readFullRulesBannerBtn" class="shrink-0 text-[11px] font-cinzel font-semibold text-amber-400 hover:text-amber-200 border border-amber-700/60 rounded-xl px-3 py-1.5 transition-all">
+            Read Regulations ↗
+          </button>
+        </div>
+
+        <!-- ================= RULES ACKNOWLEDGMENT / UNLOCK CHECKBOX ================= -->
+        <div id="rulesConsentSection" class="p-4 bg-gradient-to-r from-stone-950 via-amber-950/20 to-stone-950 rounded-2xl border border-amber-500/40 shadow-inner flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <label class="flex items-start sm:items-center space-x-3 cursor-pointer select-none">
+            <input type="checkbox" id="rulesCheckbox" class="w-5 h-5 mt-0.5 sm:mt-0 rounded bg-[#0d0c11] border-slate-700 text-amber-500 focus:ring-amber-500 accent-amber-500 cursor-pointer" />
+            <div class="text-xs font-cinzel">
+              <span class="text-slate-200 font-semibold tracking-wide">
+                I confirm that I have read, understood, and agreed to abide by all the General Sports Rules and event regulations.
+              </span>
+              <p class="text-[10px] text-amber-400 font-light tracking-wider lowercase mt-0.5">
+                (you must tick this declaration after reading the rules to unlock player inputs)
+              </p>
+            </div>
+          </label>
+
+          <button type="button" id="readRulesInlineBtn" class="shrink-0 bg-stone-900 hover:bg-stone-800 text-amber-300 border border-amber-600/50 rounded-xl px-3.5 py-1.5 text-[11px] font-cinzel tracking-wider transition-all">
+            Open Rules 📜
+          </button>
+        </div>
+
         <!-- Dynamic Player Roster Slots -->
-        <div class="space-y-3">
+        <div class="space-y-3 relative">
           <div class="flex flex-col sm:flex-row justify-between items-baseline gap-1">
             <h2 class="text-sm sm:text-base font-bold font-cinzel tracking-wider text-slate-200 flex items-center gap-2">
               <img src="logo.png" onerror="this.src='https://lh3.googleusercontent.com/a/ACg8ocKVCZ3dwhUxDnuDbv2TfiSLT54QDnjOOAb-ke-HPQSY0R6qt4o=s360-c-no';" class="w-5 h-5 rounded-full border border-slate-500/60 inline-block object-cover" alt="icon" />
               <span id="rosterTitle">Squad Roster, Roles & Captain Designation</span>
             </h2>
+            <span id="lockStatusIndicator" class="text-xs font-cinzel text-amber-400/90 tracking-wider">🔒 Locked: Read & Accept Rules</span>
           </div>
 
-          <div class="border border-slate-800 rounded-2xl overflow-hidden bg-black/70 shadow-2xl">
+          <!-- Locked Overlay for the Roster Container -->
+          <div class="relative border border-slate-800 rounded-2xl overflow-hidden bg-black/70 shadow-2xl">
+            <!-- Lock Curtain Banner shown when unticked -->
+            <div id="rosterLockOverlay" class="absolute inset-0 bg-black/75 backdrop-blur-[2px] z-20 flex flex-col items-center justify-center p-6 text-center space-y-3">
+              <div class="w-12 h-12 rounded-full border border-amber-500/60 bg-stone-950 flex items-center justify-center text-xl shadow-[0_0_20px_rgba(245,158,11,0.25)]">
+                🔒
+              </div>
+              <div class="space-y-1">
+                <p class="text-xs font-cinzel font-bold text-amber-300 uppercase tracking-widest">Roster Selection Locked</p>
+                <p class="text-xs text-slate-400 font-light max-w-md">Please read the rules and check the acknowledgment box above to unlock squad editing.</p>
+              </div>
+              <button type="button" id="unlockOverlayBtn" class="bg-amber-950/60 hover:bg-amber-900/80 text-amber-200 border border-amber-600/70 rounded-full px-4 py-1.5 text-xs font-cinzel tracking-wider uppercase transition-all">
+                Read Rules & Unlock
+              </button>
+            </div>
+
             <!-- Table Header -->
             <div id="tableHeader" class="grid grid-cols-12 bg-slate-950/90 px-4 py-3 font-cinzel text-xs text-slate-300 font-bold uppercase tracking-widest border-b border-slate-800">
               <div class="col-span-1 text-center text-slate-500">Rank</div>
@@ -328,12 +466,12 @@
 
         <!-- Action Buttons -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-          <button type="button" id="syncBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-slate-200 font-cinzel font-bold tracking-[0.2em] text-xs uppercase py-4 px-4 rounded-xl border border-slate-600/40 shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer">
+          <button type="button" id="syncBtn" disabled class="w-full bg-slate-900 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-slate-200 font-cinzel font-bold tracking-[0.2em] text-xs uppercase py-4 px-4 rounded-xl border border-slate-600/40 shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer">
             <span>Sync Sheet</span>
           </button>
 
-          <button type="button" id="finalizeBtn" class="w-full bg-gradient-to-r from-slate-900 via-slate-800 to-zinc-900 hover:from-slate-800 hover:to-zinc-800 text-slate-100 font-cinzel font-bold tracking-[0.2em] text-xs uppercase py-4 px-4 rounded-xl border border-slate-400/50 shadow-[0_0_20px_rgba(148,163,184,0.25)] transition-all flex items-center justify-center space-x-2 cursor-pointer">
-            <span>Finalize Team & Download Card</span>
+          <button type="button" id="finalizeBtn" disabled class="w-full bg-gradient-to-r from-slate-900 via-slate-800 to-zinc-900 hover:from-slate-800 hover:to-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed text-slate-100 font-cinzel font-bold tracking-[0.2em] text-xs uppercase py-4 px-4 rounded-xl border border-slate-400/50 shadow-[0_0_20px_rgba(148,163,184,0.25)] transition-all flex items-center justify-center space-x-2 cursor-pointer">
+            <span>Finalize & Download Team Card</span>
           </button>
         </div>
 
@@ -347,7 +485,340 @@
 
   <script>
     /******************************************************************
-     * 1. AUDIO ENGINE (`track.mp3`)
+     * 0. RULES & REGULATIONS DATA SOURCE (From E-Week 2024 PDF)
+     ******************************************************************/
+    const RULES_REGULATIONS_DATA = {
+      "general": {
+        title: "General Sports Rules & Regulations",
+        badge: "Mandatory Across All Disciplines",
+        rules: [
+          "For all team events the teams must present before 10 min of the event time.",
+          "The judge / umpire decision will consider as final.",
+          "If anyone or team argue with judge or umpire and also with another team, definitely disqualify.",
+          "Discipline must strictly followed.",
+          "If the team or any participant is late for an event for more than 10 minutes, the team or the participants will be disqualified unless informed in advance with valid reason.",
+          "Each event will start immediately after the end of the previous event due to the tight schedule. However, it will be informed at least 10 minutes before the event begins."
+        ]
+      },
+      "athletics": {
+        title: "Athletics Rules (Standard Across All Track & Field Events)",
+        badge: "All Athletic Events Follow These Rules",
+        rules: [
+          "A batch can represent only 2 members for an individual event.",
+          "Regarding individual events, each athlete may participate in a maximum of three individual events. Participation in relay events is permitted in addition to the three individual events.",
+          "A batch can represent only one team (4 members) for relay races.",
+          "Boys must wear suitable athletic kits when participating in an event, and bottoms are not allowed.",
+          "Every participant or team must be present on time. If they are late for 5 min from the event time, the member or the team will be disqualified.",
+          "All events will be conducted according to international rules.",
+          "The judge's decision will be the final."
+        ]
+      },
+      "volleyball": {
+        title: "Volleyball Rules & Regulations",
+        badge: "League Format",
+        rules: [
+          "This is a league Tournament.",
+          "The draw will be arranged before the start of the match.",
+          "Each game will consist of three (3) sets of 25 points each. (Depending on the schedule of the day, maybe it will be increased to (5) sets.)",
+          "Two (2) time outs will be permitted per team during any given set.",
+          "Further International volleyball rules will be followed."
+        ]
+      },
+      "table_tennis": {
+        title: "Table Tennis Rules & Regulations (Men's & Women's)",
+        badge: "Team Event",
+        rules: [
+          "There should be 3 players in a team - 2 singles and one person to play the doubles along with one of the singles players.",
+          "Each single game will consist of 3 sets of 11 points in each. In the case of 10-10 situation, the game will continue till one player gets a 2-point clearance (One player gets one serve each).",
+          "A double game will consist of 3 sets of 15 points and similar rule will apply for 14-14 situation.",
+          "In the event where a team comprises less than the minimum number of players required at the time of play (i.e. 4 members), then that particular team will have to concede a walkover.",
+          "In the case of the finals, 4 singles games (including reverse singles) and one doubles game will be played.",
+          "Further International table tennis rules will be followed."
+        ]
+      },
+      "marathon": {
+        title: "Marathon Rules & Regulations",
+        badge: "Team Event",
+        rules: [
+          "This is an event conducted as a team.",
+          "Maximum 20 participants can represent each batch.",
+          "Participants should attend and pass medical checkup.",
+          "Participants' dress should be in a good manner.",
+          "All participants are required to be present 30 minutes prior to the start of the marathon.",
+          "Participants cannot get help from any others who do not take part in the event and also from any vehicles during the event. If found, you will be disqualified.",
+          "The event map should be followed strictly.",
+          "If a participator disturbs another one who takes part in the event, he will lose his points.",
+          "Points will be counted as follows: First finisher gets 75 points; Second finisher gets 74 points; likewise points reduce from 75 to 1.",
+          "If anyone leaves the event in midway and that particular person finished the first half, he/she will receive 1 point. (The first half is counted from University Junction up to Police Station Kilinochchi).",
+          "The total number of points calculated according to the above criteria will be considered only in deciding the rank obtained by a particular batch for the event (will not be awarded as overall points; overall points follow the E-Week committee points system).",
+          "If anyone needs emergency medical care, the organizing committee will take care of you."
+        ]
+      },
+      "football": {
+        title: "Football Rules & Regulations",
+        badge: "Match Regulations",
+        rules: [
+          "Match Duration: The match consists of two 20-minute halves with a 5-minute break in between.",
+          "Team Composition: Each team must have a minimum of 7 players to start the match (including 1 goalkeeper).",
+          "The goalkeeper is the only player allowed to handle the ball within the 18-yard box.",
+          "Substitutions: Substitutions can be made at any time during the match, with no limit on the number of substitutions.",
+          "Fouls & Discipline: Yellow cards will be issued for minor fouls. Red cards will be issued for serious fouls or unsporting behavior. A player receiving a red card will be sent off and cannot be replaced.",
+          "Jersey Requirements: All outfield players must wear the same color jersey. Only the goalkeeper may wear a different-colored jersey.",
+          "Footwear: Wearing boots is not compulsory.",
+          "Further international football rules will be followed, unless specified in these updated rules."
+        ]
+      },
+      "badminton": {
+        title: "Badminton Rules & Regulations (Men's & Women's)",
+        badge: "Team Tie Format",
+        rules: [
+          "Men's Squad: Minimum 6 players nominated in a team - 3 players for singles and 3 players for the doubles match. Only one player who has played in a singles match is allowed to play again in a doubles match. No other players can play again in the same tie.",
+          "Men's Tie Order: 1st Match: 1st Singles | 2nd Match: 2nd Singles | 3rd Match: 3rd Singles | 4th Match: 1st Doubles | 5th Match: 2nd Doubles.",
+          "Women's Squad: Minimum 4 players nominated in a team - 2 singles players and 2 doubles players. The two singles players nominated cannot play in the doubles match of the same tie.",
+          "Women's Tie Order: 1st Match: 1st Singles | 2nd Match: 2nd Singles | 3rd Match: Doubles.",
+          "Walkover: If a team comprises less than the required minimum players at game time (i.e. 4 members), that team must concede a walkover.",
+          "Scoring: Each singles game consists of 3 sets of 21 points each. At 20-20, game continues until a 2-point clearance up to 25 points. Doubles game also consists of 3 sets of 21 points with similar 20-20 rule.",
+          "Shuttle: Mavis 600 shuttle will be used.",
+          "Finals: Singles match sets will consist of 3 sets of 21 points with tie-break rules.",
+          "Further International badminton rules will be followed."
+        ]
+      },
+      "elle": {
+        title: "Elle Rules & Regulations",
+        badge: "National Elle Federation Rules",
+        rules: [
+          "The team squad should consist of 20 players.",
+          "Each team should field 16 players.",
+          "4 Girls should participate in each team including the 16 members.",
+          "25 balls for each team; 5 balls must be faced by girls.",
+          "If the match is a tie, 5 more balls will be given to play.",
+          "Proper rules must be explained at the beginning of the match to the captains.",
+          "Players should have proper dresses (no bottoms for boys).",
+          "Further National Elle Federation rules will be followed."
+        ]
+      },
+      "cricket": {
+        title: "Cricket Rules & Regulations",
+        badge: "Soft Ball League",
+        rules: [
+          "The team squad should consist of 15 players (11 players per side).",
+          "Tournament format: League with 7 overs per side. Final consists of 10 overs per each side.",
+          "Bowling limits: Only 2 bowlers are allowed to bowl 2 overs for 7-over matches. For 10-over finals, only 4 bowlers can bowl 2 overs.",
+          "Powerplay: Batting powerplay is limited to 2 overs (1st and 2nd overs). Only 3 fielders outside the 30-yard circle during powerplay; after powerplay only 5 fielders allowed outside circle.",
+          "Tournament Progression: Top team of the league stage directly enters the final. 2nd and 3rd places qualify for the playoff; winner of playoff enters the final.",
+          "Match Points: Winning team earns 2 points. If points are tied, Net Run Rate (NRR) will be considered.",
+          "Super Over: If a match is tied, winners will be decided by a super over (6 balls with 2 wickets).",
+          "Rules & Dress: National soft ball federation rules apply. No leg before wicket (LBW). Shoulder-height no balls and rain interruptions will be considered. It is COMPULSORY for players to wear bottoms.",
+          "Umpire decision will be the final decision."
+        ]
+      },
+      "chess": {
+        title: "Chess Rules & Regulations",
+        badge: "FIDE Standard Chess",
+        rules: [
+          "Conducted as an official Round-Robin Team Tournament in accordance with applicable FIDE regulations, using Swiss-Manager software.",
+          "Played under the Standard Chess category according to current FIDE Laws of Chess.",
+          "Each batch may register a maximum of one Boys' Team and one Girls' Team.",
+          "Each team shall consist of 8 members: 6 playing members and 2 reserve players.",
+          "Team Ranking Order: Match Points; Game Points; Sonneborn-Berger (SB) Points.",
+          "Time Control: 60 minutes for each player for the entire game, with no increment, unless announced by Chief Arbiter.",
+          "Clocks & Time Expiry: Clocks start at scheduled time. Article 6.9 applies on flag fall: loss on time, unless opponent cannot checkmate by any possible series of legal moves (declared drawn).",
+          "Drop Sheet & Board Order: Submitted to Chief Arbiter at least 10 minutes prior to scheduled match start. Board order must be strictly preserved throughout.",
+          "Chief Arbiter's decision is final in cases not covered by these rules."
+        ]
+      },
+      "carrom": {
+        title: "Carrom Rules & Regulations (Men's & Women's)",
+        badge: "League Tournament",
+        rules: [
+          "League tournament; maximum 1 team per batch, all members from the same batch.",
+          "Men's Squad: Minimum 5 players - 3 for singles and 2 for doubles. The two singles players cannot play in doubles.",
+          "Men's Duration: Decided by 30 minutes or 25 points whichever comes first.",
+          "Women's Squad: Minimum 3 players - only 1 player allowed to participate in both singles and doubles.",
+          "Women's Duration: Decided by 15 minutes whichever team gets more points.",
+          "Points calculation will be announced before game start. International carrom rules followed."
+        ]
+      },
+      "basketball": {
+        title: "Basketball Rules & Regulations",
+        badge: "FIBA Rules Applied",
+        rules: [
+          "Each team can have a maximum of 9 players and minimum of 5 players.",
+          "Game Duration: 2 halves of 7 minutes. Halftime is 2 minutes.",
+          "Clock Timing: Runs while ball is in play. Stopped on fouls, free throws, timeouts, or when ball is far out of bounds. Starts on inbound touch.",
+          "No shot clock used.",
+          "Timeouts: One (1) timeout permitted per team during a half (30 seconds duration).",
+          "Team Fouls: Two free throws awarded on the 5th team foul for the remainder of the half.",
+          "Individual fouls not counted, but continuous fouls will receive appropriate referee warning.",
+          "Safety: No jewellery or dangerous items may be worn (bands, rings, chains, earrings).",
+          "Substitutions: Must report to scorekeeper and be recognized by game official before entering.",
+          "Further FIBA basketball rules will be followed."
+        ]
+      }
+    };
+
+    // Athletic events array referencing athletics rules
+    const ATHLETICS_KEYS = [
+      "100m", "200m", "400m", "800m", "1500m", 
+      "4x100", "4x400", "100m_hurdles", "shotput", 
+      "longjump", "discuss_throw", "high_jump", "javelin_throw"
+    ];
+
+    function getRuleKeyForSport(sportKey) {
+      if (!sportKey) return "general";
+      if (ATHLETICS_KEYS.includes(sportKey)) return "athletics";
+      return RULES_REGULATIONS_DATA[sportKey] ? sportKey : "general";
+    }
+
+    /******************************************************************
+     * 1. RULES MODAL & ROSTER LOCKING CONTROLS
+     ******************************************************************/
+    const rulesModal = document.getElementById("rulesModal");
+    const closeRulesModal = document.getElementById("closeRulesModal");
+    const acceptRulesModalBtn = document.getElementById("acceptRulesModalBtn");
+    const openLoginRulesBtn = document.getElementById("openLoginRulesBtn");
+    const openPortalRulesBtn = document.getElementById("openPortalRulesBtn");
+    const sportRulesQuickBtn = document.getElementById("sportRulesQuickBtn");
+    const readRulesInlineBtn = document.getElementById("readRulesInlineBtn");
+    const unlockOverlayBtn = document.getElementById("unlockOverlayBtn");
+    const modalSportSwitch = document.getElementById("modalSportSwitch");
+    const rulesModalContent = document.getElementById("rulesModalContent");
+    const activeRulesNotice = document.getElementById("activeRulesNotice");
+    const activeRulesSportName = document.getElementById("activeRulesSportName");
+    const activeRulesSummary = document.getElementById("activeRulesSummary");
+    const readFullRulesBannerBtn = document.getElementById("readFullRulesBannerBtn");
+
+    // Lock elements
+    const rulesCheckbox = document.getElementById("rulesCheckbox");
+    const rosterLockOverlay = document.getElementById("rosterLockOverlay");
+    const lockStatusIndicator = document.getElementById("lockStatusIndicator");
+    const syncBtn = document.getElementById("syncBtn");
+    const finalizeBtn = document.getElementById("finalizeBtn");
+
+    function setRosterLockState(isUnlocked) {
+      if (isUnlocked) {
+        rosterLockOverlay.classList.add("hidden");
+        lockStatusIndicator.innerText = "🔓 Unlocked: Rules Accepted";
+        lockStatusIndicator.className = "text-xs font-cinzel text-emerald-400 tracking-wider font-semibold";
+        syncBtn.removeAttribute("disabled");
+        finalizeBtn.removeAttribute("disabled");
+      } else {
+        rosterLockOverlay.classList.remove("hidden");
+        lockStatusIndicator.innerText = "🔒 Locked: Read & Accept Rules";
+        lockStatusIndicator.className = "text-xs font-cinzel text-amber-400/90 tracking-wider";
+        syncBtn.setAttribute("disabled", "true");
+        finalizeBtn.setAttribute("disabled", "true");
+      }
+    }
+
+    rulesCheckbox.addEventListener("change", (e) => {
+      setRosterLockState(e.target.checked);
+    });
+
+    if (acceptRulesModalBtn) {
+      acceptRulesModalBtn.addEventListener("click", () => {
+        rulesCheckbox.checked = true;
+        setRosterLockState(true);
+        hideRulesModal();
+      });
+    }
+
+    function renderRulesModalContent(key) {
+      rulesModalContent.innerHTML = "";
+
+      // Always show General Sports Rules block first
+      const general = RULES_REGULATIONS_DATA["general"];
+      const generalSection = document.createElement("div");
+      generalSection.className = "bg-stone-950/80 p-5 rounded-2xl border border-slate-800 space-y-3";
+      generalSection.innerHTML = `
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+          <h4 class="text-xs font-cinzel font-bold text-amber-400 uppercase tracking-widest flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-amber-500"></span> ${general.title}
+          </h4>
+          <span class="text-[10px] font-cinzel text-slate-400 bg-slate-900 border border-slate-700 px-2 py-0.5 rounded-full">${general.badge}</span>
+        </div>
+        <ul class="space-y-2 list-disc list-inside text-xs text-slate-300">
+          ${general.rules.map(r => `<li class="leading-relaxed">${r}</li>`).join('')}
+        </ul>
+      `;
+      rulesModalContent.appendChild(generalSection);
+
+      // If specific sport selected, show its dedicated regulations block
+      if (key !== "general" && key !== "all") {
+        const specific = RULES_REGULATIONS_DATA[key];
+        if (specific) {
+          const specSection = document.createElement("div");
+          specSection.className = "bg-stone-950/90 p-5 rounded-2xl border border-amber-600/50 space-y-3 shadow-xl";
+          specSection.innerHTML = `
+            <div class="flex items-center justify-between border-b border-amber-800/60 pb-2">
+              <h4 class="text-xs font-cinzel font-bold text-amber-300 uppercase tracking-widest flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span> ${specific.title}
+              </h4>
+              <span class="text-[10px] font-cinzel text-amber-300 bg-amber-950/60 border border-amber-600/60 px-2.5 py-0.5 rounded-full">${specific.badge}</span>
+            </div>
+            <ul class="space-y-2 list-disc list-inside text-xs text-slate-200">
+              ${specific.rules.map(r => `<li class="leading-relaxed font-normal">${r}</li>`).join('')}
+            </ul>
+          `;
+          rulesModalContent.appendChild(specSection);
+        }
+      }
+    }
+
+    function showRulesModal(sportKey = null) {
+      const selected = sportKey || sportSelect.value;
+      const ruleKey = getRuleKeyForSport(selected);
+      modalSportSwitch.value = ruleKey;
+      renderRulesModalContent(ruleKey);
+      rulesModal.classList.remove("hidden");
+    }
+
+    function hideRulesModal() {
+      rulesModal.classList.add("hidden");
+    }
+
+    if (openLoginRulesBtn) openLoginRulesBtn.addEventListener("click", () => showRulesModal("general"));
+    if (openPortalRulesBtn) openPortalRulesBtn.addEventListener("click", () => showRulesModal());
+    if (sportRulesQuickBtn) sportRulesQuickBtn.addEventListener("click", () => showRulesModal());
+    if (readRulesInlineBtn) readRulesInlineBtn.addEventListener("click", () => showRulesModal());
+    if (unlockOverlayBtn) unlockOverlayBtn.addEventListener("click", () => showRulesModal());
+    if (readFullRulesBannerBtn) readFullRulesBannerBtn.addEventListener("click", () => showRulesModal());
+    if (closeRulesModal) closeRulesModal.addEventListener("click", hideRulesModal);
+
+    modalSportSwitch.addEventListener("change", (e) => {
+      renderRulesModalContent(e.target.value);
+    });
+
+    rulesModal.addEventListener("click", (e) => {
+      if (e.target === rulesModal) hideRulesModal();
+    });
+
+    /******************************************************************
+     * 2. PDF INSTRUCTION MANUAL MODAL CONTROLS
+     ******************************************************************/
+    const pdfModal = document.getElementById("pdfModal");
+    const openLoginPdfBtn = document.getElementById("openLoginPdfBtn");
+    const openPortalPdfBtn = document.getElementById("openPortalPdfBtn");
+    const closePdfModal = document.getElementById("closePdfModal");
+
+    function showPdfModal() {
+      pdfModal.classList.remove("hidden");
+    }
+
+    function hidePdfModal() {
+      pdfModal.classList.add("hidden");
+    }
+
+    if (openLoginPdfBtn) openLoginPdfBtn.addEventListener("click", showPdfModal);
+    if (openPortalPdfBtn) openPortalPdfBtn.addEventListener("click", showPdfModal);
+    if (closePdfModal) closePdfModal.addEventListener("click", hidePdfModal);
+
+    pdfModal.addEventListener("click", (e) => {
+      if (e.target === pdfModal) hidePdfModal();
+    });
+
+    /******************************************************************
+     * 3. AUDIO ENGINE (`track.mp3`)
      ******************************************************************/
     const bgAudio = document.getElementById("bgAudio");
     const audioBtn = document.getElementById("audioToggleBtn");
@@ -393,7 +864,7 @@
     });
 
     /******************************************************************
-     * 2. REPRESENTATIVE & MASTER ADMIN AUTHENTICATION
+     * 4. REPRESENTATIVE & MASTER ADMIN AUTHENTICATION
      ******************************************************************/
     const BATCH_ACCOUNTS = {
       "rep_e22": { pass: "K9#mQ2", batch: "E22" },
@@ -462,6 +933,9 @@
         }
 
         sportSelect.value = "";
+        activeRulesNotice.classList.add("hidden");
+        rulesCheckbox.checked = false;
+        setRosterLockState(false);
         updatePlayerSlots(0);
       } else {
         loginError.classList.remove("hidden");
@@ -473,6 +947,8 @@
       isAdmin = false;
       pauseAudio();
       document.getElementById("loginForm").reset();
+      rulesCheckbox.checked = false;
+      setRosterLockState(false);
       updatePlayerSlots(0);
       portalScreen.classList.add("hidden");
 
@@ -484,7 +960,7 @@
     });
 
     /******************************************************************
-     * 3. EVENT LIMITS & CONFIGURATION
+     * 5. EVENT LIMITS & CONFIGURATION
      ******************************************************************/
     const EVENT_LIMITS = {
       "cricket": 20,
@@ -596,13 +1072,29 @@
         alert("Basketball is restricted to MEN only.");
         sportSelect.value = "";
         updatePlayerSlots(0);
+        activeRulesNotice.classList.add("hidden");
         return;
       }
       if (sport === "netball" && category !== "WOMEN") {
         alert("Netball is restricted to WOMEN only.");
         sportSelect.value = "";
         updatePlayerSlots(0);
+        activeRulesNotice.classList.add("hidden");
         return;
+      }
+
+      // Re-lock roster on changing events to require fresh acknowledgment of rules
+      rulesCheckbox.checked = false;
+      setRosterLockState(false);
+
+      // Update the inline rules notice
+      const ruleKey = getRuleKeyForSport(sport);
+      if (sport && RULES_REGULATIONS_DATA[ruleKey]) {
+        activeRulesSportName.innerText = RULES_REGULATIONS_DATA[ruleKey].title;
+        activeRulesSummary.innerText = RULES_REGULATIONS_DATA[ruleKey].rules[0] + " • Be present 10 mins prior.";
+        activeRulesNotice.classList.remove("hidden");
+      } else {
+        activeRulesNotice.classList.add("hidden");
       }
 
       const limit = EVENT_LIMITS[sport] || 0;
@@ -675,9 +1167,14 @@
     }
 
     /******************************************************************
-     * 4. SYNC TO GOOGLE SHEET
+     * 6. SYNC TO GOOGLE SHEET
      ******************************************************************/
     document.getElementById("syncBtn").addEventListener("click", async () => {
+      if (!rulesCheckbox.checked) {
+        alert("Please read and agree to the rules by ticking the checkbox first.");
+        return;
+      }
+
       const eventName = sportSelect.value;
       const category = categorySelect.value;
       if (!eventName) {
@@ -716,9 +1213,14 @@
     });
 
     /******************************************************************
-     * 5. FINALIZE TEAM & DOWNLOAD .DOCX TEAM CARD (FROM LOCAL REPO)
+     * 7. FINALIZE TEAM & CONVERT TEMPLATE TO PDF VIA CONVERTAPI
      ******************************************************************/
     document.getElementById("finalizeBtn").addEventListener("click", async () => {
+      if (!rulesCheckbox.checked) {
+        alert("Please read and agree to the rules by ticking the checkbox first.");
+        return;
+      }
+
       const eventName = sportSelect.value;
       const category = categorySelect.value;
       if (!eventName) {
@@ -737,18 +1239,18 @@
 
       const today = new Date().toLocaleDateString("en-GB");
 
-      let captainName = "";
+      let captainName = "Not Designated";
       for (let i = 1; i <= limit; i++) {
         const capRadio = document.getElementById(`player_${i}_captain`);
         if (capRadio && capRadio.checked) {
-          captainName = document.getElementById(`player_${i}_name`).value.trim();
+          captainName = document.getElementById(`player_${i}_name`).value.trim() || "Not Designated";
           break;
         }
       }
 
       const payload = {
         batch: authenticatedBatch,
-        category: category,
+        gender: category,
         event: eventName,
         captain: captainName,
         date_submitted: today
@@ -760,10 +1262,12 @@
       }
 
       try {
+        // 1. Fetch template .docx file from local directory
         const response = await fetch(`Team_Cards/${eventName}.docx`);
         if (!response.ok) throw new Error(`Could not find 'Team_Cards/${eventName}.docx' in project directory.`);
         const arrayBuffer = await response.arrayBuffer();
 
+        // 2. Populate template via docxtemplater
         const zip = new PizZip(arrayBuffer);
         const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
         doc.render(payload);
@@ -773,10 +1277,38 @@
           mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         });
 
-        saveAs(filledBlob, `${authenticatedBatch}_${category}_${eventName}_TeamCard.docx`);
+        // 3. Send populated .docx blob to ConvertAPI to convert directly to PDF
+        const formData = new FormData();
+        formData.append("File", filledBlob, `${authenticatedBatch}_${category}_${eventName}.docx`);
+        formData.append("StoreFile", "true");
+
+        const convertResponse = await fetch("https://v2.convertapi.com/convert/docx/to/pdf", {
+          method: "POST",
+          headers: {
+            "Authorization": "Bearer I36Bfekzgdq8UfIoHy2BLMbdQ0CkzPTK"
+          },
+          body: formData
+        });
+
+        if (!convertResponse.ok) {
+          throw new Error("Failed to convert document to PDF via ConvertAPI.");
+        }
+
+        const resultJson = await convertResponse.json();
+        if (resultJson && resultJson.Files && resultJson.Files[0].Url) {
+          const pdfUrl = resultJson.Files[0].Url;
+
+          // Download converted PDF file
+          const pdfBlobRes = await fetch(pdfUrl);
+          const pdfBlob = await pdfBlobRes.blob();
+          saveAs(pdfBlob, `${authenticatedBatch}_${category}_${eventName}_TeamCard.pdf`);
+        } else {
+          throw new Error("Invalid response received from conversion service.");
+        }
+
       } catch (err) {
         console.error(err);
-        alert("Document Generation Error: " + err.message);
+        alert("Template Conversion Error: " + err.message);
       }
 
       // Sync data to sheet in background
@@ -798,7 +1330,7 @@
     });
 
     /******************************************************************
-     * 6. REALISTIC EMBERS CANVAS PARTICLE ENGINE
+     * 8. REALISTIC EMBERS CANVAS PARTICLE ENGINE
      ******************************************************************/
     const canvas = document.getElementById("emberCanvas");
     const ctx = canvas.getContext("2d");

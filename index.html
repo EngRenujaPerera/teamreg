@@ -153,6 +153,25 @@
   <!-- Background Soundtrack -->
   <audio id="bgAudio" src="track.mp3" loop preload="auto"></audio>
 
+  <!-- ================= PORTAL CLOSED DEADLINE OVERLAY ================= -->
+  <div id="deadlineClosedModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex items-center justify-center p-4">
+    <div class="valyrian-shield max-w-lg w-full p-8 rounded-3xl text-center space-y-6 border border-rose-900/60 shadow-[0_0_80px_rgba(225,29,72,0.3)]">
+      <div class="w-20 h-20 mx-auto rounded-full border border-rose-500/70 bg-rose-950/40 flex items-center justify-center text-3xl shadow-[0_0_30px_rgba(225,29,72,0.4)]">
+        ⏳
+      </div>
+      <div class="space-y-2">
+        <h2 class="text-xl sm:text-2xl font-bold font-cinzel text-rose-300 uppercase tracking-widest">Portal Has Closed</h2>
+        <p class="text-xs font-cinzel text-amber-400 tracking-wider">Registration Deadline Reached</p>
+        <p class="text-xs text-slate-400 font-light leading-relaxed pt-2">
+          The official submission deadline for team cards was <strong class="text-slate-200">November 4th, 11:59 PM</strong>. Submission rosters are now sealed in the Citadel archives.
+        </p>
+      </div>
+      <div class="p-3 bg-stone-950/80 rounded-xl border border-slate-800 text-[11px] font-cinzel text-slate-500 tracking-widest uppercase">
+        Faculty of Engineering • University of Jaffna
+      </div>
+    </div>
+  </div>
+
   <!-- ================= GOT THEME LOADING BUFFER ================= -->
   <div id="loadingOverlay" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center space-y-4">
     <div class="valyrian-spinner"></div>
@@ -310,6 +329,38 @@
       </div>
     </nav>
 
+    <!-- Valyrian Countdown Banner -->
+    <div id="countdownBanner" class="valyrian-nav-bar rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 border border-amber-600/40 bg-gradient-to-r from-stone-950 via-amber-950/30 to-stone-950 shadow-xl">
+      <div class="flex items-center space-x-3 text-center sm:text-left">
+        <span class="text-2xl animate-pulse">⏳</span>
+        <div>
+          <h3 class="text-xs font-cinzel font-bold text-amber-300 tracking-[0.2em] uppercase">Submission Deadline: Nov 4, 11:59 PM</h3>
+          <p class="text-[10px] text-slate-400 font-cinzel">Team card submission closes promptly when time expires</p>
+        </div>
+      </div>
+      <div id="countdownBoxes" class="flex items-center space-x-2 text-center font-cinzel">
+        <div class="bg-stone-950/90 border border-amber-600/50 rounded-xl px-3 py-1.5 min-w-[55px]">
+          <span id="cdDays" class="text-base font-bold text-amber-200">00</span>
+          <span class="block text-[9px] text-slate-400 uppercase tracking-widest">Days</span>
+        </div>
+        <span class="text-amber-500 font-bold">:</span>
+        <div class="bg-stone-950/90 border border-amber-600/50 rounded-xl px-3 py-1.5 min-w-[55px]">
+          <span id="cdHours" class="text-base font-bold text-amber-200">00</span>
+          <span class="block text-[9px] text-slate-400 uppercase tracking-widest">Hours</span>
+        </div>
+        <span class="text-amber-500 font-bold">:</span>
+        <div class="bg-stone-950/90 border border-amber-600/50 rounded-xl px-3 py-1.5 min-w-[55px]">
+          <span id="cdMins" class="text-base font-bold text-amber-200">00</span>
+          <span class="block text-[9px] text-slate-400 uppercase tracking-widest">Mins</span>
+        </div>
+        <span class="text-amber-500 font-bold">:</span>
+        <div class="bg-stone-950/90 border border-amber-600/50 rounded-xl px-3 py-1.5 min-w-[55px]">
+          <span id="cdSecs" class="text-base font-bold text-amber-400">00</span>
+          <span class="block text-[9px] text-slate-400 uppercase tracking-widest">Secs</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Clean Header -->
     <header class="text-center py-4 px-4 space-y-3">
       <div class="inline-block relative">
@@ -367,13 +418,11 @@
               <option value="volleyball">Volleyball</option>
               <option value="netball">Netball</option>
               <option value="elle">Elle</option>
-              <option value="debate">Debate</option>
               <option value="badminton">Badminton</option>
               <option value="table_tennis">Table Tennis</option>
               <option value="carrom">Carrom</option>
               <option value="marathon">Marathon</option>
               <option value="chess">Chess</option>
-              <option value="espeaker">E Speaker</option>
               <optgroup label="Athletics Events (Identical Track & Field Rules)">
                 <option value="100m">100m</option>
                 <option value="200m">200m</option>
@@ -485,7 +534,57 @@
 
   <script>
     /******************************************************************
-     * 0. RULES & REGULATIONS DATA SOURCE (From E-Week 2024 PDF)
+     * 0. DEADLINE COUNTDOWN & CLOSURE CONTROLLER (Nov 4, 11:59:59 PM)
+     ******************************************************************/
+    // Target: November 4, 2026, 23:59:59 local time (Sri Lanka Standard Time / UTC+5:30)
+    const DEADLINE_TIMESTAMP = new Date(2026, 10, 4, 23, 59, 59).getTime();
+
+    const cdDays = document.getElementById("cdDays");
+    const cdHours = document.getElementById("cdHours");
+    const cdMins = document.getElementById("cdMins");
+    const cdSecs = document.getElementById("cdSecs");
+    const deadlineClosedModal = document.getElementById("deadlineClosedModal");
+
+    function enforceDeadlineStatus() {
+      const now = new Date().getTime();
+      const distance = DEADLINE_TIMESTAMP - now;
+
+      if (distance <= 0) {
+        cdDays.innerText = "00";
+        cdHours.innerText = "00";
+        cdMins.innerText = "00";
+        cdSecs.innerText = "00";
+
+        // Admin bypass allows admins to view records; locks out all other users
+        if (!isAdmin) {
+          deadlineClosedModal.classList.remove("hidden");
+          const syncButton = document.getElementById("syncBtn");
+          const finalizeButton = document.getElementById("finalizeBtn");
+          if (syncButton) syncButton.disabled = true;
+          if (finalizeButton) finalizeButton.disabled = true;
+        }
+        return true;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      cdDays.innerText = String(days).padStart(2, "0");
+      cdHours.innerText = String(hours).padStart(2, "0");
+      cdMins.innerText = String(minutes).padStart(2, "0");
+      cdSecs.innerText = String(seconds).padStart(2, "0");
+
+      return false;
+    }
+
+    // Run countdown update every 1 second
+    setInterval(enforceDeadlineStatus, 1000);
+    enforceDeadlineStatus();
+
+    /******************************************************************
+     * 1. RULES & REGULATIONS DATA SOURCE (From E-Week 2024 PDF)
      ******************************************************************/
     const RULES_REGULATIONS_DATA = {
       "general": {
@@ -657,7 +756,6 @@
       }
     };
 
-    // Athletic events array referencing athletics rules
     const ATHLETICS_KEYS = [
       "100m", "200m", "400m", "800m", "1500m", 
       "4x100", "4x400", "100m_hurdles", "shotput", 
@@ -671,7 +769,7 @@
     }
 
     /******************************************************************
-     * 1. RULES MODAL & ROSTER LOCKING CONTROLS
+     * 2. RULES MODAL & ROSTER LOCKING CONTROLS
      ******************************************************************/
     const rulesModal = document.getElementById("rulesModal");
     const closeRulesModal = document.getElementById("closeRulesModal");
@@ -688,7 +786,6 @@
     const activeRulesSummary = document.getElementById("activeRulesSummary");
     const readFullRulesBannerBtn = document.getElementById("readFullRulesBannerBtn");
 
-    // Lock elements
     const rulesCheckbox = document.getElementById("rulesCheckbox");
     const rosterLockOverlay = document.getElementById("rosterLockOverlay");
     const lockStatusIndicator = document.getElementById("lockStatusIndicator");
@@ -696,6 +793,8 @@
     const finalizeBtn = document.getElementById("finalizeBtn");
 
     function setRosterLockState(isUnlocked) {
+      if (enforceDeadlineStatus() && !isAdmin) return;
+
       if (isUnlocked) {
         rosterLockOverlay.classList.add("hidden");
         lockStatusIndicator.innerText = "🔓 Unlocked: Rules Accepted";
@@ -726,7 +825,6 @@
     function renderRulesModalContent(key) {
       rulesModalContent.innerHTML = "";
 
-      // Always show General Sports Rules block first
       const general = RULES_REGULATIONS_DATA["general"];
       const generalSection = document.createElement("div");
       generalSection.className = "bg-stone-950/80 p-5 rounded-2xl border border-slate-800 space-y-3";
@@ -743,7 +841,6 @@
       `;
       rulesModalContent.appendChild(generalSection);
 
-      // If specific sport selected, show its dedicated regulations block
       if (key !== "general" && key !== "all") {
         const specific = RULES_REGULATIONS_DATA[key];
         if (specific) {
@@ -794,7 +891,7 @@
     });
 
     /******************************************************************
-     * 2. PDF INSTRUCTION MANUAL MODAL CONTROLS
+     * 3. PDF INSTRUCTION MANUAL MODAL CONTROLS
      ******************************************************************/
     const pdfModal = document.getElementById("pdfModal");
     const openLoginPdfBtn = document.getElementById("openLoginPdfBtn");
@@ -818,7 +915,7 @@
     });
 
     /******************************************************************
-     * 3. AUDIO ENGINE (`track.mp3`)
+     * 4. AUDIO ENGINE (`track.mp3`)
      ******************************************************************/
     const bgAudio = document.getElementById("bgAudio");
     const audioBtn = document.getElementById("audioToggleBtn");
@@ -864,7 +961,7 @@
     });
 
     /******************************************************************
-     * 4. REPRESENTATIVE & MASTER ADMIN AUTHENTICATION
+     * 5. AUTHENTICATION & ADMIN ROLES
      ******************************************************************/
     const BATCH_ACCOUNTS = {
       "rep_e22": { pass: "K9#mQ2", batch: "E22" },
@@ -904,6 +1001,7 @@
 
         if (BATCH_ACCOUNTS[user].isAdmin) {
           isAdmin = true;
+          deadlineClosedModal.classList.add("hidden"); // Admin bypass
           repBadge.innerText = "Authorized: Master Admin";
           batchRealmStatus.innerText = "(admin mode - select any batch)";
 
@@ -931,6 +1029,8 @@
             <input type="text" id="batchSelect" value="${authenticatedBatch}" readonly class="w-full bg-[#0d0c11] border border-slate-500/40 text-slate-200 font-bold rounded-xl p-3 text-sm font-cinzel cursor-not-allowed focus:outline-none" />
           `;
         }
+
+        enforceDeadlineStatus();
 
         sportSelect.value = "";
         activeRulesNotice.classList.add("hidden");
@@ -960,7 +1060,7 @@
     });
 
     /******************************************************************
-     * 5. EVENT LIMITS & CONFIGURATION
+     * 6. EVENT LIMITS & CONFIGURATION
      ******************************************************************/
     const EVENT_LIMITS = {
       "cricket": 20,
@@ -969,13 +1069,11 @@
       "volleyball": 10,
       "netball": 12,
       "elle": 20,
-      "debate": 5,
       "badminton": 6,
       "table_tennis": 10,
       "carrom": 10,
       "marathon": 20,
       "chess": 10,
-      "espeaker": 5,
       "100m": 5,
       "200m": 5,
       "400m": 5,
@@ -1083,11 +1181,9 @@
         return;
       }
 
-      // Re-lock roster on changing events to require fresh acknowledgment of rules
       rulesCheckbox.checked = false;
       setRosterLockState(false);
 
-      // Update the inline rules notice
       const ruleKey = getRuleKeyForSport(sport);
       if (sport && RULES_REGULATIONS_DATA[ruleKey]) {
         activeRulesSportName.innerText = RULES_REGULATIONS_DATA[ruleKey].title;
@@ -1167,9 +1263,14 @@
     }
 
     /******************************************************************
-     * 6. SYNC TO GOOGLE SHEET
+     * 7. SYNC TO GOOGLE SHEET
      ******************************************************************/
     document.getElementById("syncBtn").addEventListener("click", async () => {
+      if (enforceDeadlineStatus() && !isAdmin) {
+        alert("The submission deadline has expired. Portal is closed.");
+        return;
+      }
+
       if (!rulesCheckbox.checked) {
         alert("Please read and agree to the rules by ticking the checkbox first.");
         return;
@@ -1213,9 +1314,14 @@
     });
 
     /******************************************************************
-     * 7. FINALIZE TEAM & DIRECTLY DOWNLOAD WORD CARD (.docx)
+     * 8. FINALIZE TEAM & DIRECTLY DOWNLOAD WORD CARD (.docx)
      ******************************************************************/
     document.getElementById("finalizeBtn").addEventListener("click", async () => {
+      if (enforceDeadlineStatus() && !isAdmin) {
+        alert("The submission deadline has expired. Portal is closed.");
+        return;
+      }
+
       if (!rulesCheckbox.checked) {
         alert("Please read and agree to the rules by ticking the checkbox first.");
         return;
@@ -1262,12 +1368,10 @@
       }
 
       try {
-        // 1. Fetch template .docx file from local directory
         const response = await fetch(`Team_Cards/${eventName}.docx`);
         if (!response.ok) throw new Error(`Could not find 'Team_Cards/${eventName}.docx' in project directory.`);
         const arrayBuffer = await response.arrayBuffer();
 
-        // 2. Populate template via docxtemplater
         const zip = new PizZip(arrayBuffer);
         const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
         doc.render(payload);
@@ -1277,7 +1381,6 @@
           mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         });
 
-        // 3. Directly download the rendered Word (.docx) file
         saveAs(filledBlob, `${authenticatedBatch}_${category}_${eventName}_TeamCard.docx`);
 
       } catch (err) {
@@ -1285,7 +1388,6 @@
         alert("Template Generation Error: " + err.message);
       }
 
-      // Sync data to sheet in background
       try {
         await fetch(GOOGLE_APPS_SCRIPT_URL, {
           method: "POST",
@@ -1304,7 +1406,7 @@
     });
 
     /******************************************************************
-     * 8. REALISTIC EMBERS CANVAS PARTICLE ENGINE
+     * 9. REALISTIC EMBERS CANVAS PARTICLE ENGINE
      ******************************************************************/
     const canvas = document.getElementById("emberCanvas");
     const ctx = canvas.getContext("2d");
